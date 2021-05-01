@@ -1,15 +1,23 @@
 {
   "name": "with-webassembly",
   "dependencies": {
+    "fs": "^0.0.1-security",
+    "got": "^11.8.2",
+    "mem": "^8.1.1",
     "next": "latest",
     "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "react-dom": "^17.0.0",
+    "wasi": "^0.0.6"
   },
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "build-rust": "rustc --target wasm32-unknown-unknown -O --crate-type=cdylib src/add.rs -o add.wasm",
+    "build-src": "/home/potatohd/emsdk/upstream/emscripten/em++ -O2 src/main.cpp -s WASM=1 -s SIDE_MODULE=1 -o wasm/main.wasm",
     "start": "next start"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^17.0.4",
+    "typescript": "^4.2.4"
+  }
 }

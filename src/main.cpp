@@ -1,6 +1,8 @@
-#include <iostream>
+//#include <iostream>
+int i;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    i = 0;
+//    printf("Hello, world\n");
+    return ++i;
 }

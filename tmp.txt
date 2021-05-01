@@ -1,0 +1,2 @@
+em++ -O2 test.cpp -s WASM=1 -s SIDE_MODULE=1 -o test.wasm
+"build-src": "clang++ -ObjC++ --compile --target=wasm32-unknown-unknown-wasm src/main.cpp --output wasm/main.wasm",
