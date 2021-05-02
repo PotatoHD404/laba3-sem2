@@ -1,32 +1,25 @@
 import {withRouter} from 'next/router'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { WASI } from 'wasi';
+import Wasm from "react-wasm";
 
-const Main = dynamic({
-    loader: async () => {
-        // Import the wasm module
-        let memory = new WebAssembly.Memory({initial:10, maximum:100});
-        const Laba = await import('../wasm/main.wasm')
-        WebAssembly.instantiateStreaming(Laba, { js: { mem: memory } })
-            .then(obj => {
-                var i32 = new Uint32Array(memory.buffer);
-                for (var i = 0; i < 10; i++) {
-                    i32[i] = i;
-                }
-                var sum = obj.instance.exports.accumulate(0, 10);
-                console.log(sum);
-            });
-        // Return a React component that calls the add_one method on the wasm module
-        return (props) => <div>{Laba.main()}</div>
-    },
-})
+const Main = () => (
+    <Wasm url="/Laba3.wasm">
+        {({ loading, error, data }) => {
+            if (loading) return "Loading...";
+            if (error) return "An error has occurred";
+
+            const { module, instance } = data;
+            return <div>1 + 2 = {instance.exports.add(1, 2)}</div>;
+        }}
+    </Wasm>
+);
 
 const Page = ({router: {query}}) => {
     const number = parseInt(query.number || 30)
     return (
         <div>
-            <Main number={number}/>
+            <Main />
             <Link href={`/?number=${number + 1}`}>
                 <a>+</a>
             </Link>

@@ -1,1 +1,0 @@
-CMakeLists.txt not found in C:\Users\korna\CLionProjects\Laba3 Select CMakeLists.txt

@@ -1,2 +1,5 @@
 em++ -O2 test.cpp -s WASM=1 -s SIDE_MODULE=1 -o test.wasm
 "build-src": "clang++ -ObjC++ --compile --target=wasm32-unknown-unknown-wasm src/main.cpp --output wasm/main.wasm",
+//    "build-src": "/home/potatohd/emsdk/upstream/emscripten/emcmake -O2 src/main.cpp -s WASM=1 -s SIDE_MODULE=1 -o wasm/main.wasm",
+gulp --gulpfile ./static/scripts/build.ts
+cd ./src && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake && make && rm CMakeCache.txt cmake_install.cmake Makefile

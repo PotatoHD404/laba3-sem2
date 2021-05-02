@@ -1,8 +1,7 @@
-//#include <iostream>
-int i;
+#include <emscripten/emscripten.h>
 
 int main() {
+    int i;
     i = 0;
-//    printf("Hello, world\n");
     return ++i;
 }
