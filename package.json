@@ -10,7 +10,6 @@
     "perf_hooks": "^0.0.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-wasm": "^1.0.1",
     "ts-node": "^9.1.1",
     "wasi": "^0.0.6",
     "webassembly": "^0.11.0"
@@ -18,12 +17,13 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "build-src": "mkdir -p ./src/cmake-build-webassembly && cd ./src/cmake-build-webassembly && rm -rf * && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake ./../ && make",
+    "build-src": "mkdir -p ./src/cmake-build-webassembly1 && rm -rf cmake-build-webassembly1/* && cd ./src/cmake-build-webassembly1 && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake ./../ && make",
     "start": "next start"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^17.0.4",
+    "file-loader": "^6.2.0",
     "gulp": "^4.0.2",
     "typescript": "^4.2.4"
   }

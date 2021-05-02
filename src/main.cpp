@@ -1,7 +1,14 @@
-#include <emscripten/emscripten.h>
 
-int main() {
-    int i;
-    i = 0;
-    return ++i;
+#include <emscripten/bind.h>
+
+using namespace emscripten;
+
+int say_hello() {
+    printf("Hello from your wasm module\n");
+    return 0;
 }
+
+EMSCRIPTEN_BINDINGS(Laba3) {
+        function("sayHello", &say_hello);
+}
+
