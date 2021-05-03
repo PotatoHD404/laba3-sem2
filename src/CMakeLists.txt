@@ -15,12 +15,18 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 #    set(CMAKE_EXECUTABLE_SUFFIX .mjs)
     set_target_properties(Laba3 PROPERTIES LINK_FLAGS "\
     -s WASM=1 \
+    -Oz \
     --bind \
-    -s NODERAWFS=1 \
-    -s ASSERTIONS=1 \
-    -s EXPORT_ES6=1\
+    -s ALLOW_MEMORY_GROWTH \
+    -s MALLOC=emmalloc \
+    -s ASSERTIONS \
+    -s EXPORT_ES6 \
     -s ENVIRONMENT='node' \
-    -s MODULARIZE=1\
-    -s USE_ES6_IMPORT_META=0 \
-    -s EXPORTED_RUNTIME_METHODS=['say_hello']")
+    -s MODULARIZE \
+    -s NO_USE_ES6_IMPORT_META \
+    -s ASYNCIFY \
+    -s 'ASYNCIFY_IMPORTS=[\"do_fetch\"]' \
+    -s EXPORT_NAME=Laba3 \
+    -s USE_PTHREADS \
+    -s PROXY_TO_PTHREAD")
 endif ()
