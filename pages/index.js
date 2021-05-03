@@ -3,23 +3,37 @@
 import {useEffect} from 'react'
 import {withRouter} from 'next/router'
 import dynamic from 'next/dynamic'
-import Module from './../public/wasm/Laba3.worker.js';
+
 import Laba3WASM from './../public/wasm/Laba3.wasm'
+
 // import Laba3WASM from './../public/wasm/Laba3.wasm';
-let promiseResolve, promiseReject;
+let instance;
+
+function click() {
+    if (instance?.promiseResolve !== undefined) {
+        console.log("workin)");
+        instance.promiseResolve("32");
+    }
+    else {
+        console.log("Not workin(");
+    }
+}
+
+import Module from './../public/wasm/Laba3.js';
+
 const Page = () => {
     useEffect(async () => {
-        let instance = await Module({
+        instance = await Module({
             locateFile: () => {
                 return Laba3WASM
             },
         });
-        promiseResolve();
-        console.log(instance.sayHello(3, 5));
+
+        console.log(instance.start());
     })
 
     return (
-        <div/>
+        <button onClick={click}>sometext</button>
     );
 }
 
