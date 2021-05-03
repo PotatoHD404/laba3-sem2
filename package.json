@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@wasm/studio-utils": "^0.0.3",
+    "babel-loader": "^8.2.2",
     "fs": "^0.0.1-security",
     "got": "^11.8.2",
     "mem": "^8.1.1",
@@ -17,7 +18,7 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "build-src": "mkdir -p ./src/cmake-build-webassembly1 && rm -rf cmake-build-webassembly1/* && cd ./src/cmake-build-webassembly1 && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake ./../ && make",
+    "build-src": "mkdir -p ./src/cmake-build-webassembly ./public/wasm && rm -rf ./src/cmake-build-webassembly/* ./public/wasm/* && cd ./src/cmake-build-webassembly && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake ./../ && /home/potatohd/emsdk/upstream/emscripten/emmake make",
     "start": "next start"
   },
   "license": "MIT",

@@ -12,12 +12,15 @@ endif ()
 add_executable(Laba3 main.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set_target_properties(Laba3 PROPERTIES LINK_FLAGS "--bind \
-    -s STRICT=1 \
-    -s ALLOW_MEMORY_GROWTH=1 \
-    -s MALLOC=emmalloc \
-    -s MODULARIZE=1 \
-    -s EXPORT_ES6=1 \
-    --no-entry \
-    -o Laba3.js")
+#    set(CMAKE_EXECUTABLE_SUFFIX .mjs)
+    set_target_properties(Laba3 PROPERTIES LINK_FLAGS "\
+    -s WASM=1 \
+    --bind \
+    -s NODERAWFS=1 \
+    -s ASSERTIONS=1 \
+    -s EXPORT_ES6=1\
+    -s ENVIRONMENT='node' \
+    -s MODULARIZE=1\
+    -s USE_ES6_IMPORT_META=0 \
+    -s EXPORTED_RUNTIME_METHODS=['say_hello']")
 endif ()

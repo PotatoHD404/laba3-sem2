@@ -4,4 +4,4 @@
     if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
         set_target_properties(Laba3 PROPERTIES LINK_FLAGS "--bind -s EXPORT_ES6=1 -O2 -s WASM=1 -s MODULARIZE=1\
          -s ASSERTIONS=1 -s EXPORTED_RUNTIME_METHODS=['add'] -s EXPORT_NAME='Laba3' -s DISABLE_EXCEPTION_CATCHING=0\
-         -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT='web' -s MALLOC=emmalloc -s STRICT=1 -o Laba3.js --no-entry")
+         -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT='web' -s MALLOC=emmalloc -s STRICT=1 -o Laba3.js --no-entry -s NODERAWFS=1")
