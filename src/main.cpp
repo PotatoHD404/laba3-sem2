@@ -52,7 +52,8 @@ int start() {
 }
 
 int main() {
-    
+    string current = "sas";
+    cout << string::npos << endl;
     return 0;
 }
 

@@ -28,6 +28,8 @@ public:
             lastName(std::move(lastName)),
             birthDate(birthDate),
             isTeacher(isTeacher) {}
+
+    string GetFullName() { return firstName + " " + middleName + " " + lastName; }
 };
 
 #endif //LABA3_PERSON_H

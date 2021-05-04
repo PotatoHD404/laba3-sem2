@@ -3,4 +3,7 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/src">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/src/include/json.hpp" />
+  </component>
 </project>
