@@ -16,6 +16,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     set_target_properties(Laba3 PROPERTIES LINK_FLAGS "\
     -s WASM=1 \
     --bind \
+    --no-entry \
     -s ALLOW_MEMORY_GROWTH \
     -s MALLOC=emmalloc \
     -s ASSERTIONS \

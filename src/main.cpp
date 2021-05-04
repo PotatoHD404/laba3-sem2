@@ -1,13 +1,14 @@
 #include <iostream>
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#include <emscripten/bind.h>
-#endif
+#include "Complex.h"
+#include "NAryTree.h"
+#include "Person.h"
 
 using namespace std;
 
 #ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/bind.h>
+
 EM_JS(const char *, do_fetch, (), {
 return Asyncify.handleAsync(async () => {
 out("waiting for a fetch");
@@ -24,6 +25,7 @@ out("waiting for a fetch");
         return stringOnWasmHeap;
 });
 });
+
 string readline(){
     const char * input = do_fetch();
     string res = input;
@@ -49,11 +51,10 @@ int start() {
     return 0;
 }
 
-//int main() {
-//    printf("hello, world!\n");
-//    return 0;
-//}
-
+int main() {
+    
+    return 0;
+}
 
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(Laba3) {

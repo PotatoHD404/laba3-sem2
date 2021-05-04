@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "build-src": "mkdir -p ./src/cmake-build-webassembly ./public/wasm && rm -rf ./src/cmake-build-webassembly/* ./public/wasm/* && cd ./src/cmake-build-webassembly && /home/potatohd/emsdk/upstream/emscripten/emcmake cmake ./../ && /home/potatohd/emsdk/upstream/emscripten/emmake make",
+    "build:webassembly": "./src/build-webassembly.sh",
     "start": "next start"
   },
   "license": "MIT",
