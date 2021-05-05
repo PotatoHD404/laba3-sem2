@@ -7,38 +7,41 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <stack>
 
 using namespace std;
 
 template<class T>
 class NAryTree {
 private:
+    template<class T1>
     class Node;
 
     size_t n;
-    Node *root;
+    Node<T> *root;
 
+    template<class T1>
     class Node {
     public:
-        T data;
-        Node **children;
-        Node *parent;
+        T1 data;
+        Node<T1> **children;
+        Node<T1> *parent;
         size_t children_count;
 
 
-        Node() : Node(T()) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
+        Node() : Node(T1()) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
 
-        explicit Node(T data) : Node(data, nullptr, new Node *[1],
-                                     0) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
+        explicit Node(T1 data) : Node(data, nullptr, new Node *[1],
+                                      0) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
 
-        Node(T data, Node *parent) : // NOLINT(cppcoreguidelines-pro-type-member-init)
+        Node(T1 data, Node *parent) : // NOLINT(cppcoreguidelines-pro-type-member-init)
                 Node(data, parent, new Node *[1], 0) {}
 
         template<size_t children_count>
-        Node(T data, Node *parent, Node *(&children)[children_count]) // NOLINT(cppcoreguidelines-pro-type-member-init)
+        Node(T1 data, Node *parent, Node *(&children)[children_count]) // NOLINT(cppcoreguidelines-pro-type-member-init)
                 : Node(data, parent, children, children_count) {}
 
-        Node(T data, Node *parent, Node **children, size_t children_count) :
+        Node(T1 data, Node *parent, Node **children, size_t children_count) :
                 data(data),
                 parent(parent),
                 children(children),
@@ -71,8 +74,8 @@ private:
             children[children_count - 1] = child;
         }
 
-        T RemoveAtChild(size_t index) {
-            T res = children[index]->data;
+        T1 RemoveAtChild(size_t index) {
+            T1 res = children[index]->data;
             memcpy(children + index, children + index + 1, children_count - index);
             Resize(children_count - 1);
             return res;
@@ -86,16 +89,16 @@ private:
         }
     };
 
-    Node *GetNode(initializer_list<size_t> indexes) {
-        Node *res = root;
+    Node<T> *GetNode(initializer_list<size_t> indexes) {
+        Node<T> *res = root;
         for (size_t item : indexes)
             res = res->children[item];
         return res;
     }
 
     template<size_t N>
-    Node *GetNode(size_t (&indexes)[N]) {
-        Node *res = root;
+    Node<T> *GetNode(const size_t (&indexes)[N]) {
+        Node<T> *res = root;
         for (size_t i = 0; i < N; ++i) {
             res = res->children[indexes[i]];
         }
@@ -104,6 +107,32 @@ private:
 
 public:
     NAryTree() : root(nullptr), n(0) {}
+
+    explicit NAryTree(Node<T> *root) : root(root), n(root->children_count) {}
+
+    NAryTree(NAryTree<T> const &tree) {
+        root = new Node();
+        Node<T> *res = root;
+        std::stack<Node<T> *> s;
+        std::stack<Node<T> *> s1;
+        s.push(tree.root);
+        s1.push(res);
+        while (!s.empty()) {
+            Node<T> *node = s.pop();
+            Node<T> *tmp = s1.pop();
+            tmp->data = node->data;
+            for (int i = 0; i < n; ++i)
+                if (node->children != NULL && i < node->children_count)
+                    if (node->children[i] != NULL) {
+                        tmp->AddChild();
+                        s.push(node->children[i]);
+                        s1.push(tmp->children[i]);
+                    }
+        }
+        n = tree.n;
+    }
+
+    NAryTree(Node<T> *root, size_t n) : root(root), n(n) {}
 
     explicit NAryTree(const string &input) : NAryTree() {
         // "123 + 3232 32 123 - 32"
@@ -124,7 +153,7 @@ public:
         }
         n = length;
         length = 0;
-        Node *tmp = root;
+        Node<T> *tmp = root;
         while (currentPos < input.length()) {
             if (plusPos < minusPos) {
                 tmp = tmp->GetLastChild();
@@ -146,6 +175,93 @@ public:
                 n = length;
         }
     }
+
+    template<size_t N>
+    string Order(const size_t (&indexes)[N]) {
+        if (N != n + 1)
+            throw std::runtime_error("wrong indexes: N != n + 1");
+        if (root == NULL)
+            throw std::runtime_error("Root is NULL");
+        stringstream buffer;
+        std::stack<Node<T> *> s;
+        s.push(root);
+        while (!s.empty()) {
+            Node<T> *node = s.pop();
+            for (int i = 0; i < N; ++i)
+                if (indexes[i] == N)
+                    buffer << node->data << " ";
+                else if (node->children != NULL && indexes[i] < node->children_count)
+                    if (node->children[indexes[i]] != NULL)
+                        s.push(node->children[indexes[i]]);
+        }
+        string res;
+        buffer >> res;
+        return res;
+    }
+
+    string Order(initializer_list<size_t> initializerList) {
+        size_t indexes[n] = initializerList;
+        return Order(indexes);
+    }
+
+    string Preorder() {
+        size_t indexes[n + 1];
+        for (int i = 0; i < n + 1; i++)
+            indexes[i] = i;
+        return Order(indexes);
+    }
+
+    string Postorder() {
+        size_t indexes[n + 1];
+        for (int i = 0; i < n + 1; i++)
+            indexes[n - i - 1] = i;
+        return Order(indexes);
+    }
+
+    NAryTree<T> Subtree(initializer_list<size_t> initializerList) {
+        size_t indexes[n] = initializerList;
+        return Subtree(indexes);
+    }
+
+    template<size_t N>
+    NAryTree<T> Subtree(const size_t (&indexes)[N]) {
+        
+    }
+
+    template<typename T1>
+    NAryTree<T1> Map(T1 (*mapper)(T)) {
+        Node<T1> *res = new Node();
+        std::stack<Node<T> *> s;
+        std::stack<Node<T1> *> s1;
+        s.push(root);
+        s1.push(res);
+        while (!s.empty()) {
+            Node<T> *node = s.pop();
+            Node<T1> *tmp = s1.pop();
+            tmp->data = mapper(node->data);
+            for (int i = 0; i < n; ++i)
+                if (node->children != NULL && i < node->children_count)
+                    if (node->children[i] != NULL) {
+                        tmp->AddChild();
+                        s.push(node->children[i]);
+                        s1.push(tmp->children[i]);
+                    }
+        }
+        return NAryTree<T1>(res);
+    }
+//    iterativePreorder(node)
+//  if (node = null)
+//    return
+//  s ← empty stack
+//  s.push(node)
+//  while (not s.isEmpty())
+//    node ← s.pop()
+//    visit(node)
+//    //правый потомок заносится первым, так что левый потомок обрабатывается первым
+//    if (node.right ≠ null)
+//      s.push(node.right)
+//    if (node.left ≠ null)
+//      s.push(node.left)
 
 //    explicit NAryTree(size_t count) : NAryTree() {
 //        if (count >= 536870912)
