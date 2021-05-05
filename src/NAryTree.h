@@ -1,3 +1,6 @@
+#pragma clang diagnostic Push
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
+#pragma ide diagnostic ignored "modernize-use-auto"
 //
 // Created by korna on 30.04.2021.
 //
@@ -7,7 +10,8 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
-#include <stack>
+#include "ArraySequence.h"
+#include "Stack.h"
 
 using namespace std;
 
@@ -24,68 +28,100 @@ private:
     class Node {
     public:
         T1 data;
-        Node<T1> **children;
+        ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
-        size_t children_count;
 
+        Node() : Node(T1()) {}
 
-        Node() : Node(T1()) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
+        Node(Node<T1> const &node) : Node(&node) {}
 
-        explicit Node(T1 data) : Node(data, nullptr, new Node *[1],
-                                      0) {} // NOLINT(cppcoreguidelines-pro-type-member-init)
-
-        Node(T1 data, Node *parent) : // NOLINT(cppcoreguidelines-pro-type-member-init)
-                Node(data, parent, new Node *[1], 0) {}
-
-        template<size_t children_count>
-        Node(T1 data, Node *parent, Node *(&children)[children_count]) // NOLINT(cppcoreguidelines-pro-type-member-init)
-                : Node(data, parent, children, children_count) {}
-
-        Node(T1 data, Node *parent, Node **children, size_t children_count) :
-                data(data),
-                parent(parent),
-                children(children),
-                children_count(children_count) {}
-
-        void Resize(size_t newSize) {
-            for (size_t i = newSize; i < children_count; ++i) {
-                children[i]->~Node();
+        explicit Node(Node<T1> *input) : Node() {
+            Node<T1> *res = new Node();
+            Stack<Node<T1> *> s;
+            Stack<Node<T1> *> s1;
+            s.Push(input);
+            s1.Push(this);
+            while (!s.IsEmpty()) {
+                Node<T1> *node = s.Pop();
+                Node<T1> *tmp = s1.Pop();
+                tmp->data = node->data;
+                for (int i = 0; i < node->ChildrenCount(); ++i)
+                    if (node->children[i] != NULL) {
+                        tmp->AddChild();
+                        s.Push(node->children[i]);
+                        s1.Push(tmp->children[i]);
+                    }
             }
-            Node **newArr;
-            if (newSize != 0) {
-                newArr = new Node *[newSize];
-                size_t old_size = old_size <= newSize ? children_count : newSize;
-                memcpy(newArr, children, old_size * sizeof(Node));
-            } else {
-                newArr = new Node *[1];
+        }
+
+        template<class T2>
+        explicit Node(Node<T2> *input, T1 (*mapper)(T2)) {
+            Stack<Node<T2> *> s;
+            Stack<Node<T1> *> s1;
+            s.Push(input);
+            s1.Push(this);
+            while (!s.IsEmpty()) {
+                Node<T2> *node = s.Pop();
+                Node<T1> *tmp = s1.Pop();
+                tmp->data = mapper(node->data);
+                for (int i = 0; i < node->ChildrenCount(); ++i)
+                    if (node->children[i] != NULL) {
+                        tmp->AddChild();
+                        s.Push(node->children[i]);
+                        s1.Push(tmp->children[i]);
+                    }
             }
-            children_count = newSize;
-            delete[] children;
-            children = newArr;
+        }
+
+        explicit Node(T1 data) : Node(data, nullptr, new Node *[1], 0) {}
+
+        Node(T1 data, Node *parent) : Node(data, parent, new Node *[1], 0) {}
+
+        template<size_t ChildrenCount()>
+        Node(T1 data, Node *parent, Node *(&children)[ChildrenCount()]):  data(data), parent(parent),
+                                                                          children(children) {}
+
+        Node(T1 data, Node *parent, ArraySequence<Node<T1> *> children, size_t ChildrenCount()) : data(data),
+                                                                                                  parent(parent),
+                                                                                                  children(children) {}
+
+        T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
+            if (f == nullptr)
+                throw std::invalid_argument("mapper is NULL");
+            T res = c;
+            Stack<Node<T> *> s;
+            Stack<Node<T1> *> s1;
+            s.Push(this);
+            while (!s.IsEmpty()) {
+                Node<T> *node = s.Pop();
+                res = f(node->data, res);
+                for (int i = 0; i < node->ChildrenCount(); ++i)
+                    if (node->children[i] != NULL)
+                        s.Push(node->children[i]);
+
+            }
+        }
+
+        size_t ChildrenCount() {
+            return children.GetLength();
         }
 
         Node *GetLastChild() {
-            return children[children_count - 1];
+            return children.GetLast();
         }
 
         void AddChild(Node *child) {
-            Resize(children_count + 1);
-            child->parent = this;
-            children[children_count - 1] = child;
+            children.Append(child);
         }
 
         T1 RemoveAtChild(size_t index) {
-            T1 res = children[index]->data;
-            memcpy(children + index, children + index + 1, children_count - index);
-            Resize(children_count - 1);
-            return res;
+            return children.RemoveAt(index);
         }
 
         ~Node() {
-            for (size_t i = 0; i < children_count; ++i) {
+            for (size_t i = 0; i < children.GetLength(); ++i) {
                 children[i]->~Node();
             }
-            delete[] children;
         }
     };
 
@@ -105,32 +141,23 @@ private:
         return res;
     }
 
+    template<size_t N>
+    ArraySequence<Node<T> *> GetPath(const size_t (&indexes)[N]) {
+        Node<T> *tmp = root;
+        ArraySequence<Node<T> *> res;
+        for (size_t i = 0; i < N; ++i) {
+            res.Append(tmp);
+            tmp = tmp->children[indexes[i]];
+        }
+        return res;
+    }
+
 public:
     NAryTree() : root(nullptr), n(0) {}
 
-    explicit NAryTree(Node<T> *root) : root(root), n(root->children_count) {}
+    explicit NAryTree(Node<T> *root) : root(root), n(root->ChildrenCount()) {}
 
-    NAryTree(NAryTree<T> const &tree) {
-        root = new Node();
-        Node<T> *res = root;
-        std::stack<Node<T> *> s;
-        std::stack<Node<T> *> s1;
-        s.push(tree.root);
-        s1.push(res);
-        while (!s.empty()) {
-            Node<T> *node = s.pop();
-            Node<T> *tmp = s1.pop();
-            tmp->data = node->data;
-            for (int i = 0; i < n; ++i)
-                if (node->children != NULL && i < node->children_count)
-                    if (node->children[i] != NULL) {
-                        tmp->AddChild();
-                        s.push(node->children[i]);
-                        s1.push(tmp->children[i]);
-                    }
-        }
-        n = tree.n;
-    }
+    NAryTree(NAryTree<T> const &tree) : root(new Node(tree.root)), n(tree.n) {}
 
     NAryTree(Node<T> *root, size_t n) : root(root), n(n) {}
 
@@ -177,31 +204,35 @@ public:
     }
 
     template<size_t N>
-    string Order(const size_t (&indexes)[N]) {
+    string Order(const size_t (&indexes)[N], const string &brackets) {
         if (N != n + 1)
             throw std::runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
             throw std::runtime_error("Root is NULL");
         stringstream buffer;
-        std::stack<Node<T> *> s;
-        s.push(root);
-        while (!s.empty()) {
-            Node<T> *node = s.pop();
+        Stack<Node<T> *> s;
+        s.Push(root);
+        while (!s.IsEmpty()) {
+            Node<T> *node = s.Pop();
             for (int i = 0; i < N; ++i)
                 if (indexes[i] == N)
                     buffer << node->data << " ";
-                else if (node->children != NULL && indexes[i] < node->children_count)
+                else if (node->children != NULL && indexes[i] < node->ChildrenCount())
                     if (node->children[indexes[i]] != NULL)
-                        s.push(node->children[indexes[i]]);
+                        s.Push(node->children[indexes[i]]);
         }
         string res;
         buffer >> res;
         return res;
     }
-
-    string Order(initializer_list<size_t> initializerList) {
+    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
         size_t indexes[n] = initializerList;
-        return Order(indexes);
+        return Order(indexes, brackets);
+    }
+
+    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
+        size_t indexes[n] = initializerList;
+        return Order(indexes, brackets);
     }
 
     string Preorder() {
@@ -218,50 +249,38 @@ public:
         return Order(indexes);
     }
 
-    NAryTree<T> Subtree(initializer_list<size_t> initializerList) {
-        size_t indexes[n] = initializerList;
-        return Subtree(indexes);
+    NAryTree<T> Subtree(initializer_list<size_t> indexes) {
+        return NAryTree<T>(new Node(GetNode(indexes)));
     }
 
     template<size_t N>
     NAryTree<T> Subtree(const size_t (&indexes)[N]) {
-        
+        return NAryTree<T>(new Node(GetNode(indexes)));
     }
 
     template<typename T1>
     NAryTree<T1> Map(T1 (*mapper)(T)) {
-        Node<T1> *res = new Node();
-        std::stack<Node<T> *> s;
-        std::stack<Node<T1> *> s1;
-        s.push(root);
-        s1.push(res);
-        while (!s.empty()) {
-            Node<T> *node = s.pop();
-            Node<T1> *tmp = s1.pop();
-            tmp->data = mapper(node->data);
-            for (int i = 0; i < n; ++i)
-                if (node->children != NULL && i < node->children_count)
-                    if (node->children[i] != NULL) {
-                        tmp->AddChild();
-                        s.push(node->children[i]);
-                        s1.push(tmp->children[i]);
-                    }
-        }
-        return NAryTree<T1>(res);
+        return NAryTree<T1>(new Node(root, mapper));
     }
+
+    T Reduce(T (*f)(T), T const &c) {
+        return root->Reduce(f, c);
+    }
+
+
 //    iterativePreorder(node)
 //  if (node = null)
 //    return
 //  s ← empty stack
-//  s.push(node)
+//  s.Push(node)
 //  while (not s.isEmpty())
-//    node ← s.pop()
+//    node ← s.Pop()
 //    visit(node)
 //    //правый потомок заносится первым, так что левый потомок обрабатывается первым
 //    if (node.right ≠ null)
-//      s.push(node.right)
+//      s.Push(node.right)
 //    if (node.left ≠ null)
-//      s.push(node.left)
+//      s.Push(node.left)
 
 //    explicit NAryTree(size_t count) : NAryTree() {
 //        if (count >= 536870912)
@@ -493,3 +512,4 @@ public:
 };
 
 #endif //LABA3_NARYTREE_H
+#pragma clang diagnostic pop
