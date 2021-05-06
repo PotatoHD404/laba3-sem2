@@ -230,10 +230,10 @@ public:
         return Order(indexes, brackets);
     }
 
-    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
-        size_t indexes[n] = initializerList;
-        return Order(indexes, brackets);
-    }
+//    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
+//        size_t indexes[n] = initializerList;
+//        return Order(indexes, brackets);
+//    }
 
     string Preorder() {
         size_t indexes[n + 1];

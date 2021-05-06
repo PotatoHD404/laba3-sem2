@@ -114,6 +114,18 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___getTypeName')) {
+        Object.defineProperty(Module['ready'], '___getTypeName', { configurable: true, get: function() { abort('You are getting ___getTypeName on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '___getTypeName', { configurable: true, set: function() { abort('You are setting ___getTypeName on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___embind_register_native_and_builtin_types')) {
+        Object.defineProperty(Module['ready'], '___embind_register_native_and_builtin_types', { configurable: true, get: function() { abort('You are getting ___embind_register_native_and_builtin_types on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '___embind_register_native_and_builtin_types', { configurable: true, set: function() { abort('You are setting ___embind_register_native_and_builtin_types on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
       if (!Object.getOwnPropertyDescriptor(Module['ready'], 'onRuntimeInitialized')) {
         Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, get: function() { abort('You are getting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, set: function() { abort('You are setting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
@@ -1305,6 +1317,7 @@ TTY.init();
 
 function exitRuntime() {
   checkStackCookie();
+  Asyncify.checkStateAfterExitRuntime();
   runtimeExited = true;
 }
 
@@ -5579,6 +5592,9 @@ function do_fetch(){ return Asyncify.handleAsync(async () => { out("waiting for 
             }
           })(x);
         }
+      },checkStateAfterExitRuntime:function() {
+        assert(Asyncify.state === Asyncify.State.None,
+              'Asyncify cannot be done during or after the runtime exits');
       },instrumentWasmExports:function(exports) {
         var ret = {};
         for (var x in exports) {
@@ -5653,7 +5669,7 @@ function do_fetch(){ return Asyncify.handleAsync(async () => { out("waiting for 
           var reachedCallback = false;
           var reachedAfterCallback = false;
           startAsync(function(handleSleepReturnValue) {
-            assert(!handleSleepReturnValue || typeof handleSleepReturnValue === 'number'); // old emterpretify API supported other stuff
+            assert(!handleSleepReturnValue || typeof handleSleepReturnValue === 'number' || typeof handleSleepReturnValue === 'boolean'); // old emterpretify API supported other stuff
             if (ABORT) return;
             Asyncify.handleSleepReturnValue = handleSleepReturnValue || 0;
             reachedCallback = true;
@@ -5844,10 +5860,10 @@ var ___embind_register_native_and_builtin_types = Module["___embind_register_nat
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
-var _fflush = Module["_fflush"] = createExportWrapper("fflush");
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
 /** @type {function(...*):?} */
-var _malloc = Module["_malloc"] = createExportWrapper("malloc");
+var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
@@ -5896,13 +5912,16 @@ var dynCall_ii = Module["dynCall_ii"] = createExportWrapper("dynCall_ii");
 var dynCall_i = Module["dynCall_i"] = createExportWrapper("dynCall_i");
 
 /** @type {function(...*):?} */
+var dynCall_iiii = Module["dynCall_iiii"] = createExportWrapper("dynCall_iiii");
+
+/** @type {function(...*):?} */
+var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
+
+/** @type {function(...*):?} */
 var dynCall_vi = Module["dynCall_vi"] = createExportWrapper("dynCall_vi");
 
 /** @type {function(...*):?} */
 var dynCall_vii = Module["dynCall_vii"] = createExportWrapper("dynCall_vii");
-
-/** @type {function(...*):?} */
-var dynCall_iiii = Module["dynCall_iiii"] = createExportWrapper("dynCall_iiii");
 
 /** @type {function(...*):?} */
 var dynCall_viijii = Module["dynCall_viijii"] = createExportWrapper("dynCall_viijii");
@@ -5912,9 +5931,6 @@ var dynCall_viiii = Module["dynCall_viiii"] = createExportWrapper("dynCall_viiii
 
 /** @type {function(...*):?} */
 var dynCall_iii = Module["dynCall_iii"] = createExportWrapper("dynCall_iii");
-
-/** @type {function(...*):?} */
-var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 
 /** @type {function(...*):?} */
 var dynCall_iidiiii = Module["dynCall_iidiiii"] = createExportWrapper("dynCall_iidiiii");
