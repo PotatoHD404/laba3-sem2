@@ -13,7 +13,7 @@
 
 using namespace std;
 
-template<class T>
+template<typename T>
 /*abstract*/
 class Enumerable : public IEnumerable<T>, public ICollection<T> {
 private:
@@ -83,10 +83,10 @@ protected:
     }
 
 public:
-    Enumerable() {}
+    Enumerable() = default;
 
-    auto Split(size_t posize_t) {
-        auto res = make_tuple(this->Subsequence(0, posize_t), this->Subsequence(posize_t + 1, this->GetLength() - 1));
+    auto Split(size_t pos) {
+        auto res = make_tuple(this->Subsequence(0, pos), this->Subsequence(pos + 1, this->GetLength() - 1));
         return res;
     }
 

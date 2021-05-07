@@ -10,10 +10,10 @@
 
 using namespace std;
 
-template<class T>
+template<typename T>
 class Sequence : public Enumerable<T> {
 public:
-    Sequence() {}
+    Sequence() = default;
 
     //Decomposition
     T &GetFirst() { return At(0); }
@@ -37,11 +37,11 @@ public:
 
     virtual void InsertAt(T item, size_t index) = 0;
 
-    virtual void PopFirst() = 0;
+    virtual T PopFirst() = 0;
 
-    virtual void PopLast() = 0;
+    virtual T PopLast() = 0;
 
-    virtual void RemoveAt(size_t index) = 0;
+    virtual T RemoveAt(size_t index) = 0;
 
     virtual Sequence<T> *Concat(Sequence<T> &list) = 0;
 
@@ -49,7 +49,7 @@ public:
         return Concat(*list);
     }
 
-    virtual ~Sequence() {};
+    virtual ~Sequence() = default;
 };
 
 #endif //LABA2_SEQUENCE_H

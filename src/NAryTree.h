@@ -1,4 +1,3 @@
-#pragma clang diagnostic Push
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
 #pragma ide diagnostic ignored "modernize-use-auto"
 //
@@ -10,20 +9,16 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <regex>
 #include "ArraySequence.h"
-#include "Stack.h"
+#include "Deque.h"
+#include "Pair.h"
 
 using namespace std;
 
 template<class T>
 class NAryTree {
 private:
-    template<class T1>
-    class Node;
-
-    size_t n;
-    Node<T> *root;
-
     template<class T1>
     class Node {
     public:
@@ -37,8 +32,8 @@ private:
 
         explicit Node(Node<T1> *input) : Node() {
             Node<T1> *res = new Node();
-            Stack<Node<T1> *> s;
-            Stack<Node<T1> *> s1;
+            Deque<Node<T1> *> s;
+            Deque<Node<T1> *> s1;
             s.Push(input);
             s1.Push(this);
             while (!s.IsEmpty()) {
@@ -56,8 +51,8 @@ private:
 
         template<class T2>
         explicit Node(Node<T2> *input, T1 (*mapper)(T2)) {
-            Stack<Node<T2> *> s;
-            Stack<Node<T1> *> s1;
+            Deque<Node<T2> *> s;
+            Deque<Node<T1> *> s1;
             s.Push(input);
             s1.Push(this);
             while (!s.IsEmpty()) {
@@ -73,24 +68,24 @@ private:
             }
         }
 
-        explicit Node(T1 data) : Node(data, nullptr, new Node *[1], 0) {}
+        explicit Node(T1 data) : Node(data, nullptr, ArraySequence<Node<T1> *>()) {}
 
-        Node(T1 data, Node *parent) : Node(data, parent, new Node *[1], 0) {}
+        Node(T1 data, Node<T1> *parent) : Node(data, parent, ArraySequence<Node<T1> *>()) {}
 
-        template<size_t ChildrenCount()>
-        Node(T1 data, Node *parent, Node *(&children)[ChildrenCount()]):  data(data), parent(parent),
-                                                                          children(children) {}
+        template<size_t children_count>
+        Node(T1 data, Node<T1> *parent, Node<T1> *(&children)[children_count]):  Node(data, parent,
+                                                                                      ArraySequence<Node<T1> *>(
+                                                                                              children)) {}
 
-        Node(T1 data, Node *parent, ArraySequence<Node<T1> *> children, size_t ChildrenCount()) : data(data),
-                                                                                                  parent(parent),
-                                                                                                  children(children) {}
+        Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) : data(data), parent(parent),
+                                                                              children(children) {}
 
         T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
             if (f == nullptr)
-                throw std::invalid_argument("mapper is NULL");
+                throw invalid_argument("mapper is NULL");
             T res = c;
-            Stack<Node<T> *> s;
-            Stack<Node<T1> *> s1;
+            Deque<Node<T> *> s;
+            Deque<Node<T1> *> s1;
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
@@ -106,11 +101,11 @@ private:
             return children.GetLength();
         }
 
-        Node *GetLastChild() {
+        Node<T1> *GetLastChild() {
             return children.GetLast();
         }
 
-        void AddChild(Node *child) {
+        void AddChild(Node<T1> *child) {
             children.Append(child);
         }
 
@@ -125,6 +120,10 @@ private:
         }
     };
 
+    size_t n;
+public:
+    Node<T> *root;
+private:
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
         for (size_t item : indexes)
@@ -162,92 +161,145 @@ public:
     NAryTree(Node<T> *root, size_t n) : root(root), n(n) {}
 
     explicit NAryTree(const string &input) : NAryTree() {
-        // "123 + 3232 32 123 - 32"
+        // "123 123 + 3232 32 123 - 32"
 
         size_t plusPos = input.find(" + ");
         size_t minusPos = input.find(" - ");
         size_t currentPos = 0;
         size_t length = 0;
-        string current = input.substr(currentPos, minusPos < plusPos ? minusPos : plusPos);
+        string current = input.substr(currentPos,
+                                      minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
+                                                                                             ? minusPos : plusPos);
 
         stringstream ss(current);
+        currentPos = current.find(' ');
         T t;
         ss >> t;
-        root = new Node(t);
-        while (ss >> t) {
-            ++length;
-            root->AddChild(new Node(t));
-        }
-        n = length;
-        length = 0;
+
+        current = ss.str().substr(currentPos, ss.str().length() - 1);
+        root = new Node<T>(t);
         Node<T> *tmp = root;
         while (currentPos < input.length()) {
-            if (plusPos < minusPos) {
-                tmp = tmp->GetLastChild();
-                currentPos = plusPos + 3;
-            } else {
-                tmp = tmp->parent;
-                currentPos = minusPos + 3;
+            ss = stringstream(current);
+            currentPos += current.length();
+            while (ss >> t) {
+                tmp->AddChild(new Node<T>(t));
+                length = tmp->ChildrenCount();
             }
-            current = input.substr(currentPos, input.length());
+            if (!(plusPos == minusPos && plusPos == string::npos)) {
+                if (plusPos <= minusPos) {
+                    tmp = tmp->GetLastChild();
+                    currentPos = plusPos + 3;
+                } else {
+                    tmp = tmp->parent;
+                    currentPos = minusPos + 3;
+                }
+            }
             plusPos = current.find(" + ");
             minusPos = current.find(" - ");
-            current = input.substr(currentPos, minusPos < plusPos ? minusPos : plusPos);
-            ss = stringstream(current);
-            while (ss >> t) {
-                ++length;
-                root->AddChild(new Node(t));
-            }
+            current = input.substr(currentPos, minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
+                                                                                                      ? minusPos
+                                                                                                      : plusPos);
             if (length > n)
                 n = length;
+            if (current.length() == 0)
+                break;
+
         }
     }
 
-    template<size_t N>
-    string Order(const size_t (&indexes)[N], const string &brackets) {
-        if (N != n + 1)
-            throw std::runtime_error("wrong indexes: N != n + 1");
+    string Order(const string &str) {
+        regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
+        auto words_begin = sregex_iterator(str.begin(), str.end(), word_regex);
+        auto words_end = sregex_iterator();
+        const size_t length = distance(words_begin, words_end);
+        if (length != n + 1 || !regex_search(str, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
+            throw runtime_error("wrong input");
+//        cout << length << endl;
+        char brackets[length][2];
+        size_t indexes[length];
+        int j = 0;
+        for (sregex_iterator i = words_begin; i != words_end; ++i) {
+            smatch match = *i;
+            string match_str = match.str();
+            size_t num;
+            if (match_str[1] == 'K')
+                num = length;
+            else {
+                stringstream s(match_str.substr(1, match_str.size() - 2));
+                s >> num;
+            }
+            num -= 1;
+            if (num >= length)
+                throw runtime_error("wrong input");
+            indexes[j] = num;
+            brackets[num][0] = match_str[0];
+            brackets[num][1] = match_str[match_str.size() - 1];
+            ++j;
+        }
+        if (length != n + 1)
+            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
-            throw std::runtime_error("Root is NULL");
+            throw runtime_error("Root is NULL");
         stringstream buffer;
-        Stack<Node<T> *> s;
+        Deque<Node<T> *> s;
+        Deque<string> br;
         s.Push(root);
+        br.PushBack("");
+        br.PushBack(string(1, brackets[n][0]));
+        br.PushBack(string(1, brackets[n][1]) + " ");
         while (!s.IsEmpty()) {
             Node<T> *node = s.Pop();
-            for (int i = 0; i < N; ++i)
-                if (indexes[i] == N)
-                    buffer << node->data << " ";
-                else if (node->children != NULL && indexes[i] < node->ChildrenCount())
-                    if (node->children[indexes[i]] != NULL)
-                        s.Push(node->children[indexes[i]]);
+
+            buffer << br.Pop();
+
+            for (int i = 0; i < length; ++i) {
+                if (indexes[i] == length - 1) {
+                    buffer<< br.Pop() << node->data << br.Pop();
+                } else {
+                    if (indexes[i] < node->ChildrenCount()) {
+                        if (node->children[indexes[i]] != NULL) {
+
+
+                            br.Push(string(1, brackets[indexes[i]][1]));
+                            br.Push("");
+                            br.Push(string(1, brackets[n][1]));
+
+                            br.Push(string(1, brackets[n][0]));
+
+                            br.Push(string(1, brackets[indexes[i]][0]));
+
+
+
+                            s.PushBack(node->children[indexes[i]]);
+                        }
+
+                    } else {
+
+                    }
+
+                }
+            }
+            buffer << br.Pop();
         }
-        string res;
-        buffer >> res;
-        return res;
-    }
-    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
-        size_t indexes[n] = initializerList;
-        return Order(indexes, brackets);
+        while (!br.IsEmpty())
+            buffer << br.Pop();
+        return buffer.str();
     }
 
-//    string Order(initializer_list<size_t> const &initializerList, const string &brackets) {
-//        size_t indexes[n] = initializerList;
-//        return Order(indexes, brackets);
+//    string Preorder() {
+//        size_t indexes[n + 1];
+//        for (int i = 0; i < n + 1; i++)
+//            indexes[i] = i;
+//        return Order(indexes);
 //    }
-
-    string Preorder() {
-        size_t indexes[n + 1];
-        for (int i = 0; i < n + 1; i++)
-            indexes[i] = i;
-        return Order(indexes);
-    }
-
-    string Postorder() {
-        size_t indexes[n + 1];
-        for (int i = 0; i < n + 1; i++)
-            indexes[n - i - 1] = i;
-        return Order(indexes);
-    }
+//
+//    string Postorder() {
+//        size_t indexes[n + 1];
+//        for (int i = 0; i < n + 1; i++)
+//            indexes[n - i - 1] = i;
+//        return Order(indexes);
+//    }
 
     NAryTree<T> Subtree(initializer_list<size_t> indexes) {
         return NAryTree<T>(new Node(GetNode(indexes)));
@@ -512,4 +564,3 @@ public:
 };
 
 #endif //LABA3_NARYTREE_H
-#pragma clang diagnostic pop

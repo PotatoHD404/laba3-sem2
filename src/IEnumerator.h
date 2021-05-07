@@ -5,8 +5,7 @@
 #ifndef LABA2_IENUMERATOR_H
 #define LABA2_IENUMERATOR_H
 
-template<class T>
-/*size_terface*/
+template<typename T>
 class IEnumerator {
 public:
     virtual T &GetCurrent() = 0;

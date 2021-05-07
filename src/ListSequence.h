@@ -13,7 +13,7 @@
 
 using namespace std;
 
-template<class T>
+template<typename T>
 class ListSequence : public Sequence<T> {
 private:
     LinkedList<T> items;
@@ -149,18 +149,18 @@ public:
         items.InsertAt(item, index);
     }
 
-    void PopFirst() {
-        items.PopFirst();
+    T PopFirst() {
+        return items.PopFirst();
     }
 
-    void PopLast() {
-        items.PopLast();
+    T PopLast() {
+        return items.PopLast();
     }
 
-    void RemoveAt(size_t index) {
+    T RemoveAt(size_t index) {
         if (index < 0 || index >= items.GetLength())
             throw range_error("index < 0 or index >= length");
-        items.RemoveAt(index);
+        return items.RemoveAt(index);
     }
 
     ListSequence<T> *Concat(Sequence<T> &list) {

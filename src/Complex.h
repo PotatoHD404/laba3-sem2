@@ -27,6 +27,31 @@ public:
 
     Complex &operator=(const Complex &x) = default;
 
+    Complex &operator*=(const Complex &x) {
+        this->real = real * x.real - imaginary * x.imaginary;
+        this->imaginary = real * x.imaginary + x.real * imaginary;
+        return *this;
+    };
+
+    Complex &operator+=(const Complex &x) {
+        this->real += x.real;
+        this->imaginary += x.imaginary;
+        return *this;
+    };
+
+    Complex &operator-=(const Complex &x) {
+        this->real -= x.real;
+        this->imaginary -= x.imaginary;
+        return *this;
+    };
+
+    Complex &operator/=(const Complex &x) {
+        float k = real * real + x.imaginary * x.imaginary;
+        this->real = (real * x.real + imaginary * x.imaginary) / k;
+        this->imaginary = (x.real * imaginary - real * x.imaginary) / k;
+        return *this;
+    };
+
     Complex operator+(const Complex &x) const {
         float i, j;
         i = this->real + x.real;
@@ -76,17 +101,6 @@ public:
         in >> complex.imaginary;
         return in;
     }
-
-//    friend istream &operator>>(istream &in, Complex &x) {
-//        string str;
-//        in >> str;
-//        stringstream ss(str);
-//
-//        if (in >> x.real && in >> x.imaginary)
-//            return in;
-//        else
-//            throw std::runtime_error("Wrong input");
-//    }
 
     bool operator==(const Complex &x) const { return !(*this != x); }
 

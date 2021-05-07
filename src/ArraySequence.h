@@ -12,7 +12,7 @@
 
 using namespace std;
 
-template<class T>
+template<typename T>
 class ArraySequence : public Sequence<T> {
 private:
     DynamicArray<T> items;
@@ -159,18 +159,18 @@ public:
         return new typename IEnumerable<T>::Enumerator(this);
     }
 
-    void PopFirst() {
+    T PopFirst() {
         for (size_t i = 0; i < items.GetLength() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
         items.Resize(items.GetLength() - 1);
     }
 
-    void PopLast() {
+    T PopLast() {
         items.Resize(items.GetLength() - 1);
     }
 
-    void RemoveAt(size_t index) {
+    T RemoveAt(size_t index) {
         if (index < 0 || index >= items.GetLength())
             throw range_error("index < 0 or index >= length");
         for (size_t i = index; i < items.GetLength() - 1; ++i) {

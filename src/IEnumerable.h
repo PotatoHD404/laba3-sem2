@@ -9,8 +9,7 @@
 #include "IEnumerator.h"
 #include "ICollection.h"
 
-template<class T>
-/*size_terface*/
+template<typename T>
 class IEnumerable {
 protected:
     class Enumerator : public IEnumerator<T> {
@@ -45,11 +44,11 @@ protected:
     };
 
 public:
-    IEnumerable() {};
+    IEnumerable() = default;;
 
     virtual IEnumerator<T> *GetEnumerator() = 0;
 
-    virtual ~IEnumerable() {};
+    virtual ~IEnumerable() = default;;
 };
 
 #endif //LABA2_IENUMERABLE_H

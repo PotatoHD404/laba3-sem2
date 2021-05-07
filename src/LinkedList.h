@@ -11,7 +11,7 @@ using namespace std;
 
 ///
 /// \tparam T - type
-template<class T>
+template<typename T>
 class LinkedList {
 private:
     class Node;
@@ -258,23 +258,22 @@ public:
 
     ///
     /// \param index
-    void RemoveAt(size_t index) {
+    T RemoveAt(size_t index) {
         if (index < 0 || index >= length)
             throw range_error("index < 0 or index >= length");
-        if (index == length - 1) {
-            this->PopLast();
-            return;
-        } else if (index == 0) {
-            this->PopFirst();
-            return;
-        }
-
+        if (index == length - 1)
+            return this->PopLast();
+        else if (index == 0)
+            return this->PopFirst();
 
         Node *prev = GetNode(index - 1);
         Node *next = (prev->next)->next;
+        T data = prev->next->data;
         delete prev->next;
         prev->next = next;
         --length;
+        return data;
+
     }
 
     ///

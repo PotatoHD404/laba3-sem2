@@ -5,10 +5,10 @@
 #ifndef LABA2_ICOLLECTION_H
 #define LABA2_ICOLLECTION_H
 
-template<class T>
+template<typename T>
 class ICollection {
 public:
-    ICollection() {}
+    ICollection() = default;
 
     //Decomposition
 
@@ -23,7 +23,7 @@ public:
 
     virtual void Append(T item) = 0;
 
-    virtual void RemoveAt(size_t index) = 0;
+    virtual T RemoveAt(size_t index) = 0;
 
     virtual ~ICollection() = default;
 };
