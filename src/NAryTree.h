@@ -11,7 +11,7 @@
 #include <sstream>
 #include <regex>
 #include "ArraySequence.h"
-#include "Deque.h"
+#include "Stack.h"
 #include "Pair.h"
 
 using namespace std;
@@ -32,8 +32,8 @@ private:
 
         explicit Node(Node<T1> *input) : Node() {
             Node<T1> *res = new Node();
-            Deque<Node<T1> *> s;
-            Deque<Node<T1> *> s1;
+            Stack<Node<T1> *> s;
+            Stack<Node<T1> *> s1;
             s.Push(input);
             s1.Push(this);
             while (!s.IsEmpty()) {
@@ -51,8 +51,8 @@ private:
 
         template<class T2>
         explicit Node(Node<T2> *input, T1 (*mapper)(T2)) {
-            Deque<Node<T2> *> s;
-            Deque<Node<T1> *> s1;
+            Stack<Node<T2> *> s;
+            Stack<Node<T1> *> s1;
             s.Push(input);
             s1.Push(this);
             while (!s.IsEmpty()) {
@@ -84,8 +84,8 @@ private:
             if (f == nullptr)
                 throw invalid_argument("mapper is NULL");
             T res = c;
-            Deque<Node<T> *> s;
-            Deque<Node<T1> *> s1;
+            Stack<Node<T> *> s;
+            Stack<Node<T1> *> s1;
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
@@ -106,6 +106,13 @@ private:
         }
 
         void AddChild(Node<T1> *child) {
+            child->parent = this;
+            children.Append(child);
+        }
+
+        void AddChild() {
+            Node<T1> *child = new Node<T1>();
+            child->parent = this;
             children.Append(child);
         }
 
@@ -152,11 +159,11 @@ private:
     }
 
 public:
-    NAryTree() : root(nullptr), n(0) {}
+    NAryTree() : NAryTree(new Node<T>(), 0) {}
 
     explicit NAryTree(Node<T> *root) : root(root), n(root->ChildrenCount()) {}
 
-    NAryTree(NAryTree<T> const &tree) : root(new Node(tree.root)), n(tree.n) {}
+    NAryTree(NAryTree<T> const &tree) : root(new Node<T>(tree.root)), n(tree.n) {}
 
     NAryTree(Node<T> *root, size_t n) : root(root), n(n) {}
 
@@ -208,6 +215,88 @@ public:
         }
     }
 
+//{1}({2})[{3}({4})[{7}]]
+    NAryTree(const string &str, const string &br) {
+        regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
+        auto words_begin = sregex_iterator(br.begin(), br.end(), word_regex);
+        auto words_end = sregex_iterator();
+        const size_t length = distance(words_begin, words_end);
+        string check;
+//        if (length != n + 1 || !regex_search(br, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
+//            throw runtime_error("wrong input");
+//        cout << length << endl;
+        char brackets[length][2];
+        size_t indexes[length];
+        int j = 0;
+        for (sregex_iterator i = words_begin; i != words_end; ++i) {
+            smatch match = *i;
+            string match_str = match.str();
+            size_t num;
+            if (match_str[1] == 'K')
+                num = length;
+            else {
+                stringstream s(match_str.substr(1, match_str.size() - 2));
+                s >> num;
+            }
+            num -= 1;
+            if (num >= length)
+                throw runtime_error("wrong input");
+            indexes[j] = num;
+            if (check.find(match_str[0]) != string::npos || check.find(match_str[match_str.size() - 1]) != string::npos)
+                throw runtime_error("wrong input(brackets)");
+            brackets[num][0] = match_str[0];
+            brackets[num][1] = match_str[match_str.size() - 1];
+            check += string(brackets[num]);
+            ++j;
+        }
+        check = "";
+        string openBr;
+        string closeBr;
+        string rootBr = string(brackets[n]);
+        for (int i = 0; i < n; ++i) {
+            openBr += string(1, brackets[i][0]);
+            closeBr += string(1, brackets[i][1]);
+        }
+        size_t len = str.length();
+
+        Stack<char> bracketSequence;
+        root = new Node<T>();
+        Node<T> *node = root;
+        size_t tmp;
+        for (int i = 0; i < len; ++i) {
+            size_t found1 = openBr.find(str[i]);
+            size_t found2 = closeBr.find(str[i]);
+            if (found1 != string::npos) {
+                bracketSequence.Push(str[i]);
+                while (node->ChildrenCount() <= found1)
+                    node->AddChild();
+                node = node->children[found1];
+            } else if (rootBr[0] == str[i]) {
+                bracketSequence.Push(str[i]);
+                tmp = i;
+            } else if (found2 != string::npos) {
+                if (bracketSequence.Pop() != openBr[found2])
+                    throw std::runtime_error("Wrong input");
+                node = node->parent;
+            } else if (rootBr[1] == str[i]) {
+                if (bracketSequence.Pop() != rootBr[0])
+                    throw std::runtime_error("Wrong input");
+                try {
+                    string helpmeplease = str.substr(tmp + 1, i);
+                    stringstream ss(helpmeplease);
+                    ss >> node->data;
+                }
+                catch (const std::exception &) {
+                    throw std::runtime_error("Wrong input type");
+                }
+            }
+        }
+        if (!bracketSequence.IsEmpty())
+            throw std::runtime_error("Wrong input");
+
+        this->n = length - 1;
+    }
+
     string Order(const string &str) {
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
         auto words_begin = sregex_iterator(str.begin(), str.end(), word_regex);
@@ -242,50 +331,22 @@ public:
         if (root == NULL)
             throw runtime_error("Root is NULL");
         stringstream buffer;
-        Deque<Node<T> *> s;
-        Deque<string> br;
-        s.Push(root);
-        br.PushBack("");
-        br.PushBack(string(1, brackets[n][0]));
-        br.PushBack(string(1, brackets[n][1]) + " ");
-        while (!s.IsEmpty()) {
-            Node<T> *node = s.Pop();
-
-            buffer << br.Pop();
-
-            for (int i = 0; i < length; ++i) {
-                if (indexes[i] == length - 1) {
-                    buffer<< br.Pop() << node->data << br.Pop();
-                } else {
-                    if (indexes[i] < node->ChildrenCount()) {
-                        if (node->children[indexes[i]] != NULL) {
-
-
-                            br.Push(string(1, brackets[indexes[i]][1]));
-                            br.Push("");
-                            br.Push(string(1, brackets[n][1]));
-
-                            br.Push(string(1, brackets[n][0]));
-
-                            br.Push(string(1, brackets[indexes[i]][0]));
-
-
-
-                            s.PushBack(node->children[indexes[i]]);
-                        }
-
-                    } else {
-
-                    }
-
-                }
-            }
-            buffer << br.Pop();
-        }
-        while (!br.IsEmpty())
-            buffer << br.Pop();
+        function<void(Node<T> *, size_t)> VisitNode = [&](Node<T> *node, size_t br) {
+            if (br != -1)
+                buffer << brackets[indexes[br]][0];
+            for (int i = 0; i < length; ++i)
+                if (indexes[i] == n)
+                    buffer << brackets[n][0] << node->data << brackets[n][1];
+                else if (indexes[i] < node->ChildrenCount())
+                    VisitNode(node->children[indexes[i]], i);
+            if (br != -1)
+                buffer << brackets[indexes[br]][1];
+        };
+        VisitNode(root, -1);
         return buffer.str();
     }
+
+
 
 //    string Preorder() {
 //        size_t indexes[n + 1];

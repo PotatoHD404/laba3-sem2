@@ -2,22 +2,18 @@
 // Created by korna on 05.05.2021.
 //
 
-#ifndef LABA3_DEQUE_H
-#define LABA3_DEQUE_H
+#ifndef LABA3_STACK_H
+#define LABA3_STACK_H
 
 #include "ListSequence.h"
 
 template<class T>
-class Deque : ListSequence<T> {
+class Stack : ListSequence<T> {
 public:
-    Deque() = default;
+    Stack() = default;
 
     void Push(T item) {
         this->Prepend(item);
-    }
-
-    void PushBack(T item) {
-        this->Append(item);
     }
 
     T Pop() {
@@ -30,4 +26,4 @@ public:
 
 };
 
-#endif //LABA3_DEQUE_H
+#endif //LABA3_STACK_H
