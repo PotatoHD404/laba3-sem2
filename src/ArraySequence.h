@@ -160,23 +160,29 @@ public:
     }
 
     T PopFirst() {
+        T res = items[0];
         for (size_t i = 0; i < items.GetLength() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
         items.Resize(items.GetLength() - 1);
+        return res;
     }
 
     T PopLast() {
+        T res = items[items.GetLength() - 1];
         items.Resize(items.GetLength() - 1);
+        return res;
     }
 
     T RemoveAt(size_t index) {
+        T res = items[index];
         if (index < 0 || index >= items.GetLength())
             throw range_error("index < 0 or index >= length");
         for (size_t i = index; i < items.GetLength() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
         items.Resize(items.GetLength() - 1);
+        return res;
     }
 
     template<typename T1>

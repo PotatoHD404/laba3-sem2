@@ -215,12 +215,15 @@ public:
         }
     }
 
-//{1}({2})[{3}({4})[{7}]]
+//{1}({2})[{3}({4})[{7}]] recompile pls)
     NAryTree(const string &str, const string &br) {
+
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
         auto words_begin = sregex_iterator(br.begin(), br.end(), word_regex);
         auto words_end = sregex_iterator();
         const size_t length = distance(words_begin, words_end);
+        n = length - 1;
+        //sas
         string check;
 //        if (length != n + 1 || !regex_search(br, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
 //            throw runtime_error("wrong input");
@@ -294,7 +297,7 @@ public:
         if (!bracketSequence.IsEmpty())
             throw std::runtime_error("Wrong input");
 
-        this->n = length - 1;
+
     }
 
     string Order(const string &str) {
