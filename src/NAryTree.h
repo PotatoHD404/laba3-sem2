@@ -19,12 +19,15 @@ using namespace std;
 template<class T>
 class NAryTree {
 private:
+//    friend class BTree<T>;
     template<class T1>
     class Node {
-    public:
-        T1 data;
+    private:
+        ArraySequence<T1> data;
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
+    public:
+        friend class NAryTree;
 
         Node() : Node(T1()) {}
 
@@ -58,7 +61,7 @@ private:
             while (!s.IsEmpty()) {
                 Node<T2> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
-                tmp->data = mapper(node->data);
+                tmp->data = node->data.Map(mapper);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -73,12 +76,11 @@ private:
         Node(T1 data, Node<T1> *parent) : Node(data, parent, ArraySequence<Node<T1> *>()) {}
 
         template<size_t children_count>
-        Node(T1 data, Node<T1> *parent, Node<T1> *(&children)[children_count]):  Node(data, parent,
-                                                                                      ArraySequence<Node<T1> *>(
-                                                                                              children)) {}
+        Node(T1 data, Node<T1> *parent, Node<T1> *(&children)[children_count]):
+                Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
-        Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) : data(data), parent(parent),
-                                                                              children(children) {}
+        Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
+                data({data}), parent(parent), children(children) {}
 
         T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
             if (f == nullptr)
@@ -89,7 +91,7 @@ private:
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
-                res = f(node->data, res);
+                res = node->data.Reduce(f, res);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
@@ -99,6 +101,10 @@ private:
 
         size_t ChildrenCount() {
             return children.GetLength();
+        }
+
+        bool IsLeaf() {
+            return children.GetLength() == 0;
         }
 
         Node<T1> *GetLastChild() {
@@ -116,21 +122,16 @@ private:
             children.Append(child);
         }
 
-        T1 RemoveAtChild(size_t index) {
-            return children.RemoveAt(index);
-        }
-
         ~Node() {
             for (size_t i = 0; i < children.GetLength(); ++i) {
-                children[i]->~Node();
+                delete children[i];
             }
         }
     };
 
     size_t n;
-public:
     Node<T> *root;
-private:
+
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
         for (size_t item : indexes)
@@ -223,11 +224,7 @@ public:
         auto words_end = sregex_iterator();
         const size_t length = distance(words_begin, words_end);
         n = length - 1;
-        //sas
         string check;
-//        if (length != n + 1 || !regex_search(br, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
-//            throw runtime_error("wrong input");
-//        cout << length << endl;
         char brackets[length][2];
         size_t indexes[length];
         int j = 0;
@@ -249,13 +246,13 @@ public:
                 throw runtime_error("wrong input(brackets)");
             brackets[num][0] = match_str[0];
             brackets[num][1] = match_str[match_str.size() - 1];
-            check += string(brackets[num]);
+            check += string(1, brackets[num][0]) + string(1, brackets[num][1]);
             ++j;
         }
         check = "";
         string openBr;
         string closeBr;
-        string rootBr = string(brackets[n]);
+        string rootBr = string(1, brackets[n][0]) + string(1, brackets[n][1]);
         for (int i = 0; i < n; ++i) {
             openBr += string(1, brackets[i][0]);
             closeBr += string(1, brackets[i][1]);
@@ -285,9 +282,13 @@ public:
                 if (bracketSequence.Pop() != rootBr[0])
                     throw std::runtime_error("Wrong input");
                 try {
-                    string helpmeplease = str.substr(tmp + 1, i);
-                    stringstream ss(helpmeplease);
-                    ss >> node->data;
+                    stringstream ss(str.substr(tmp + 1, i));
+                    T d;
+                    ss >> node->data[0];
+                    while (ss >> d) {
+                        node->data.Append(d);
+                    }
+
                 }
                 catch (const std::exception &) {
                     throw std::runtime_error("Wrong input type");
@@ -338,9 +339,15 @@ public:
             if (br != -1)
                 buffer << brackets[indexes[br]][0];
             for (int i = 0; i < length; ++i)
-                if (indexes[i] == n)
-                    buffer << brackets[n][0] << node->data << brackets[n][1];
-                else if (indexes[i] < node->ChildrenCount())
+                if (indexes[i] == n) {
+                    buffer << brackets[n][0];
+                    for (int k = 0; k < node->data.GetLength(); ++k) {
+                        buffer << node->data[k];
+                        if (k != node->data.GetLength() - 1)
+                            buffer << " ";
+                    }
+                    buffer << brackets[n][1];
+                } else if (indexes[i] < node->ChildrenCount())
                     VisitNode(node->children[indexes[i]], i);
             if (br != -1)
                 buffer << brackets[indexes[br]][1];
@@ -348,22 +355,6 @@ public:
         VisitNode(root, -1);
         return buffer.str();
     }
-
-
-
-//    string Preorder() {
-//        size_t indexes[n + 1];
-//        for (int i = 0; i < n + 1; i++)
-//            indexes[i] = i;
-//        return Order(indexes);
-//    }
-//
-//    string Postorder() {
-//        size_t indexes[n + 1];
-//        for (int i = 0; i < n + 1; i++)
-//            indexes[n - i - 1] = i;
-//        return Order(indexes);
-//    }
 
     NAryTree<T> Subtree(initializer_list<size_t> indexes) {
         return NAryTree<T>(new Node(GetNode(indexes)));
@@ -383,248 +374,9 @@ public:
         return root->Reduce(f, c);
     }
 
-
-//    iterativePreorder(node)
-//  if (node = null)
-//    return
-//  s ← empty stack
-//  s.Push(node)
-//  while (not s.isEmpty())
-//    node ← s.Pop()
-//    visit(node)
-//    //правый потомок заносится первым, так что левый потомок обрабатывается первым
-//    if (node.right ≠ null)
-//      s.Push(node.right)
-//    if (node.left ≠ null)
-//      s.Push(node.left)
-
-//    explicit NAryTree(size_t count) : NAryTree() {
-//        if (count >= 536870912)
-//            throw out_of_range("count < 0");
-//        if (count > 0) {
-//            head = new Node();
-//            Node * prev = head;
-//            for (size_t i = 1; i < count; ++i) {
-//                prev->next = new Node();
-//                prev = prev->next;
-//            }
-//            tail = prev;
-//            length = count;
-//        }
-//    }
-//
-//    NAryTree(T *items, size_t count) : NAryTree() {
-//        if (count > 536870912)
-//            throw out_of_range("count < 0");
-//        if (items == NULL)
-//            throw invalid_argument("items is NULL");
-//        if (count > 0) {
-//            head = new Node(items[0]);
-//            Node * prev = head;
-//            for (size_t i = 1; i < count; ++i) {
-//                prev->next = new Node(items[i]);
-//                prev = prev->next;
-//            }
-//            tail = prev;
-//            length = count;
-//        }
-//    }
-//
-//    NAryTree(const NAryTree<T> &list) : NAryTree() {
-//        if (list.length > 0) {
-//            Node * tmp = list.head;
-//            head = new Node(tmp->data);
-//            Node * prev = head;
-//            tmp = tmp->next;
-//            while (tmp != NULL) {
-//                prev->next = new Node(tmp->data);
-//                prev = prev->next;
-//                tmp = tmp->next;
-//            }
-//            tail = prev;
-//            length = list.length;
-//        }
-//    }
-//
-//    T &GetFirst() {
-//        if (!head)
-//            throw out_of_range("");
-//        return head->data;
-//    }
-//
-//    T &GetLast() {
-//        if (!tail)
-//            throw out_of_range("");
-//        return tail->data;
-//    }
-//
-//    T &At(size_t index) {
-//        if (index < 0 || index >= length)
-//            throw out_of_range("index < 0 or index >= length");
-//        if (index == 0)
-//            return GetFirst();
-//        if (index == length - 1)
-//            return GetLast();
-//        return GetNode(index)->data;
-//    }
-//
-//    void Set(size_t index, T value) {
-//        if (index < 0 || index >= length)
-//            throw range_error("index < 0 or index >= length");
-//        At(index) = value;
-//    }
-//
-//    NAryTree<T> GetSubList(size_t startIndex, size_t endIndex) {
-//        if (startIndex < 0 || startIndex >= length)
-//            throw range_error("index < 0 or index >= length");
-//        if (startIndex > endIndex)
-//            throw range_error("startIndex > endIndex");
-//        if (endIndex >= length)
-//            throw range_error("endIndex >= length");
-//        NAryTree<T> res;
-//        Node * tmp = GetNode(startIndex);
-//        for (size_t i = startIndex; i < endIndex + 1; ++i) {
-//            res.Append(tmp->data);
-//            tmp = tmp->next;
-//        }
-//        return res;
-//    }
-//
-//    size_t GetLength() {
-//        return length;
-//    }
-//
-//    T &operator[](size_t index) { return At(index); }
-//
-//    //Operations
-//
-//    void Append(T item) {
-//        Node * tmp = new Node(item);
-//        if (head == NULL)
-//            head = tmp;
-//        else
-//            tail->next = tmp;
-//        tail = tmp;
-//        ++length;
-//    }
-//
-//    void Prepend(T item) {
-//        Node * tmp = new Node(item);
-//        if (head == NULL) {
-//            head = tmp;
-//            tail = tmp;
-//        } else {
-//            tmp->next = head;
-//            head = tmp;
-//        }
-//        ++length;
-//    }
-//
-//    T PopLast() {
-//        if (length < 1)
-//            throw range_error("length = 0");
-//        if (length == 1) {
-//            return this->PopFirst();
-//        }
-//        Node * prev = GetNode(length - 2);
-//        tail = prev;
-//        T data = prev->next->data;
-//        delete prev->next;
-//        --length;
-//        return data;
-//    }
-//
-//    T PopFirst() {
-//        if (length < 1)
-//            throw range_error("length = 0");
-//        Node * prev = head;
-//        head = prev->next;
-//        T data = prev->data;
-//        delete prev;
-//        --length;
-//        if (length == 0) {
-//            tail = NULL;
-//            head = NULL;
-//        }
-//        return data;
-//    }
-//
-//    void InsertAt(T item, size_t index) {
-//        if (index < 0 || index >= length)
-//            throw range_error("index < 0 or index >= length");
-//        if (index == length - 1) {
-//            this->Append(item);
-//            return;
-//        } else if (index == 0) {
-//            this->Prepend(item);
-//            return;
-//        }
-//
-//        Node * tmp = new Node(item);
-//        Node * prev = GetNode(index - 1);
-//        Node * next = prev->next;
-//        prev->next = tmp;
-//        tmp->next = next;
-//        ++length;
-//    }
-//
-//    void RemoveAt(size_t index) {
-//        if (index < 0 || index >= length)
-//            throw range_error("index < 0 or index >= length");
-//        if (index == length - 1) {
-//            this->PopLast();
-//            return;
-//        } else if (index == 0) {
-//            this->PopFirst();
-//            return;
-//        }
-//
-//        Node * prev = GetNode(index - 1);
-//        Node * next = (prev->next)->next;
-//        delete prev->next;
-//        prev->next = next;
-//        --length;
-//    }
-//
-//    NAryTree<T> Concat(NAryTree<T> &list) {
-//        NAryTree<T> res;
-//        for (size_t i = 0; i < length; ++i) {
-//            res.Append(this->At(i));
-//        }
-//        for (size_t i = 0; i < list.length; ++i) {
-//            res.Append(list[i]);
-//        }
-//        return res;
-//    }
-//
-//    NAryTree<T> &operator=(const NAryTree<T> &list) {
-//        this->~NAryTree();
-//        if (list.length > 0) {
-//            Node * tmp = list.head;
-//            head = new Node(tmp->data);
-//            Node * prev = head;
-//            tmp = tmp->next;
-//            while (tmp != NULL) {
-//                prev->next = new Node(tmp->data);
-//                prev = prev->next;
-//                tmp = tmp->next;
-//            }
-//            tail = prev;
-//            length = list.length;
-//        } else {
-//            head = nullptr;
-//            tail = nullptr;
-//            length = 0;
-//        }
-//        return *this;
-//    }
-//
-//    //Termination
-//
-//    ~NAryTree() {
-//        while (length)
-//            PopFirst();
-//    }
+    ~NAryTree() {
+        delete root;
+    }
 };
 
 #endif //LABA3_NARYTREE_H

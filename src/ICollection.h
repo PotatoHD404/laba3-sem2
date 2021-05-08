@@ -8,8 +8,6 @@
 template<typename T>
 class ICollection {
 public:
-    ICollection() = default;
-
     //Decomposition
 
     virtual T &At(size_t index) = 0;
@@ -24,8 +22,6 @@ public:
     virtual void Append(T item) = 0;
 
     virtual T RemoveAt(size_t index) = 0;
-
-    virtual ~ICollection() = default;
 };
 
 #endif //LABA2_ICOLLECTION_H

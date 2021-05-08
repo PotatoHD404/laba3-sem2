@@ -83,7 +83,6 @@ protected:
     }
 
 public:
-    Enumerable() = default;
 
     auto Split(size_t pos) {
         auto res = make_tuple(this->Subsequence(0, pos), this->Subsequence(pos + 1, this->GetLength() - 1));
@@ -138,9 +137,6 @@ public:
         else
             return UnZip<ChildClass, 1, Ts...>(input, args..., res);
     }
-
-
-    virtual ~Enumerable() {};
 };
 
 

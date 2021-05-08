@@ -2,6 +2,7 @@
 #include "Complex.h"
 #include "NAryTree.h"
 #include "Person.h"
+#include "BTree.h"
 #include <regex>
 
 using namespace std;
@@ -53,15 +54,10 @@ int start() {
 }
 
 int main() {
-//    string current = "sas";
-//    cout << string::npos << endl;
-//    string input = "1 2 3 4 5";
-    NAryTree<int> tree = NAryTree<int>("1 2 3 + 4 7");
+    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
     string order = tree.Order("{K}(1)[2]");
-    string wtf = "{K}(1)[2]";
     cout << order << endl;
     NAryTree<int> res(order, "{K}(1)[2]");
-    //{1}({2})[{3}({4})[{7}]]
 
     cout << res.Order("{K}(1)[2]") << endl;
     return 0;

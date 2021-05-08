@@ -44,11 +44,8 @@ protected:
     };
 
 public:
-    IEnumerable() = default;;
 
     virtual IEnumerator<T> *GetEnumerator() = 0;
-
-    virtual ~IEnumerable() = default;;
 };
 
 #endif //LABA2_IENUMERABLE_H
