@@ -18,7 +18,7 @@ public:
     //Decomposition
     T &GetFirst() { return At(0); }
 
-    T &GetLast() { return At(this->GetLength() - 1); }
+    T &GetLast() { return At(this->Count() - 1); }
 
     void Set(size_t index, T value) {
         At(index) = value;
@@ -26,7 +26,7 @@ public:
 
     virtual T &At(size_t index) = 0;
 
-//    virtual size_t GetLength() = 0;
+//    virtual size_t Count() = 0;
 
     T &operator[](size_t index) { return At(index); }
 

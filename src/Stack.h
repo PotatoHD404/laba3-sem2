@@ -21,7 +21,7 @@ public:
     }
 
     bool IsEmpty() {
-        return this->GetLength() == 0;
+        return this->Count() == 0;
     }
 
 };

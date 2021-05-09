@@ -18,16 +18,13 @@ using namespace std;
 
 template<class T>
 class NAryTree {
-private:
-//    friend class BTree<T>;
+protected:
     template<class T1>
     class Node {
-    private:
-        ArraySequence<T1> data;
+    public:
+        ArraySequence<T1> keys;
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
-    public:
-        friend class NAryTree;
 
         Node() : Node(T1()) {}
 
@@ -42,7 +39,7 @@ private:
             while (!s.IsEmpty()) {
                 Node<T1> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
-                tmp->data = node->data;
+                tmp->keys = node->keys;
                 for (int i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -61,7 +58,7 @@ private:
             while (!s.IsEmpty()) {
                 Node<T2> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
-                tmp->data = node->data.Map(mapper);
+                tmp->keys = node->keys.Map(mapper);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
@@ -80,7 +77,7 @@ private:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                data({data}), parent(parent), children(children) {}
+                keys({data}), parent(parent), children(children) {}
 
         T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
             if (f == nullptr)
@@ -91,7 +88,7 @@ private:
             s.Push(this);
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
-                res = node->data.Reduce(f, res);
+                res = node->keys.Reduce(f, res);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
@@ -100,11 +97,11 @@ private:
         }
 
         size_t ChildrenCount() {
-            return children.GetLength();
+            return children.Count();
         }
 
         bool IsLeaf() {
-            return children.GetLength() == 0;
+            return children.Count() == 0;
         }
 
         Node<T1> *GetLastChild() {
@@ -123,7 +120,7 @@ private:
         }
 
         ~Node() {
-            for (size_t i = 0; i < children.GetLength(); ++i) {
+            for (size_t i = 0; i < children.Count(); ++i) {
                 delete children[i];
             }
         }
@@ -284,9 +281,9 @@ public:
                 try {
                     stringstream ss(str.substr(tmp + 1, i));
                     T d;
-                    ss >> node->data[0];
+                    ss >> node->keys[0];
                     while (ss >> d) {
-                        node->data.Append(d);
+                        node->keys.Append(d);
                     }
 
                 }
@@ -341,9 +338,9 @@ public:
             for (int i = 0; i < length; ++i)
                 if (indexes[i] == n) {
                     buffer << brackets[n][0];
-                    for (int k = 0; k < node->data.GetLength(); ++k) {
-                        buffer << node->data[k];
-                        if (k != node->data.GetLength() - 1)
+                    for (int k = 0; k < node->keys.Count(); ++k) {
+                        buffer << node->keys[k];
+                        if (k != node->keys.Count() - 1)
                             buffer << " ";
                     }
                     buffer << brackets[n][1];
@@ -355,6 +352,8 @@ public:
         VisitNode(root, -1);
         return buffer.str();
     }
+
+
 
     NAryTree<T> Subtree(initializer_list<size_t> indexes) {
         return NAryTree<T>(new Node(GetNode(indexes)));

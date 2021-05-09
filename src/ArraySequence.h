@@ -67,11 +67,11 @@ public:
     }
 
     ArraySequence<T> *GetSubsequence(size_t startIndex, size_t endIndex) {
-        if (startIndex < 0 || startIndex >= items.GetLength())
+        if (startIndex < 0 || startIndex >= items.Count())
             throw range_error("index < 0 or index >= length");
         if (startIndex > endIndex)
             throw range_error("startIndex > endIndex");
-        if (endIndex >= items.GetLength())
+        if (endIndex >= items.Count())
             throw range_error("endIndex >= length");
         ArraySequence<T> *res = new ArraySequence<T>();
         for (size_t i = startIndex; i < endIndex + 1; ++i) {
@@ -80,16 +80,16 @@ public:
         return res;
     }
 
-    size_t GetLength() {
-        return items.GetLength();
+    size_t Count() {
+        return items.Count();
     }
 
     ArraySequence<T> *Subsequence(size_t startIndex, size_t endIndex) {
-        if (startIndex < 0 || startIndex >= items.GetLength())
+        if (startIndex < 0 || startIndex >= items.Count())
             throw range_error("index < 0 or index >= length");
         if (startIndex > endIndex)
             throw range_error("startIndex > endIndex");
-        if (endIndex >= items.GetLength())
+        if (endIndex >= items.Count())
             throw range_error("endIndex >= length");
         ArraySequence<T> *res = new ArraySequence<T>();
         res->items = items.GetSubArray(startIndex, endIndex);
@@ -97,8 +97,8 @@ public:
     }
 
     bool operator==(ArraySequence<T> &list) {
-        size_t len = list.GetLength();
-        if (len != this->items.GetLength())
+        size_t len = list.Count();
+        if (len != this->items.Count())
             return false;
         for (size_t i = 0; i < len; ++i)
             if (this->At(i) != list.At(i))
@@ -119,37 +119,41 @@ public:
         return new ArraySequence<T1>(count);
     }
 
+    void Resize(size_t count) {
+        items.Resize(count);
+    }
+
     void Append(T item) {
-        items.Resize(items.GetLength() + 1);
-        items.Set(items.GetLength() - 1, item);
+        items.Resize(items.Count() + 1);
+        items.Set(items.Count() - 1, item);
     }
 
     void Prepend(T item) {
-        items.Resize(items.GetLength() + 1);
-        for (size_t i = items.GetLength() - 1; i > 0; --i) {
+        items.Resize(items.Count() + 1);
+        for (size_t i = items.Count() - 1; i > 0; --i) {
             items.Set(i, items.At(i - 1));
         }
         items.Set(0, item);
     }
 
     void InsertAt(T item, size_t index) {
-        items.Resize(items.GetLength() + 1);
+        items.Resize(items.Count() + 1);
 
-        for (size_t i = items.GetLength() - 1; i > index; --i) {
+        for (size_t i = items.Count() - 1; i > index; --i) {
             items.Set(i, items[i - 1]);
         }
-        if (items.GetLength() - 2 != index)
+        if (items.Count() - 2 != index)
             items.Set(index, item);
         else
-            items.Set(items.GetLength() - 1, item);
+            items.Set(items.Count() - 1, item);
     }
 
     ArraySequence<T> *Concat(Sequence<T> &list) {
         ArraySequence<T> *res = new ArraySequence<T>();
-        for (size_t i = 0; i < items.GetLength(); ++i) {
+        for (size_t i = 0; i < items.Count(); ++i) {
             res->Append(items[i]);
         }
-        for (size_t i = 0; i < list.GetLength(); ++i) {
+        for (size_t i = 0; i < list.Count(); ++i) {
             res->Append(list[i]);
         }
         return res;
@@ -161,27 +165,27 @@ public:
 
     T PopFirst() {
         T res = items[0];
-        for (size_t i = 0; i < items.GetLength() - 1; ++i) {
+        for (size_t i = 0; i < items.Count() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
-        items.Resize(items.GetLength() - 1);
+        items.Resize(items.Count() - 1);
         return res;
     }
 
     T PopLast() {
-        T res = items[items.GetLength() - 1];
-        items.Resize(items.GetLength() - 1);
+        T res = items[items.Count() - 1];
+        items.Resize(items.Count() - 1);
         return res;
     }
 
     T RemoveAt(size_t index) {
         T res = items[index];
-        if (index < 0 || index >= items.GetLength())
+        if (index < 0 || index >= items.Count())
             throw range_error("index < 0 or index >= length");
-        for (size_t i = index; i < items.GetLength() - 1; ++i) {
+        for (size_t i = index; i < items.Count() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
-        items.Resize(items.GetLength() - 1);
+        items.Resize(items.Count() - 1);
         return res;
     }
 

@@ -28,11 +28,11 @@ protected:
         }
 
         size_t GetLength() {
-            return items->GetLength();
+            return items->Count();
         }
 
         bool MoveNext() {
-            if (++pos < items->GetLength())
+            if (++pos < items->Count())
                 return true;
             pos--;
             return false;
@@ -46,6 +46,8 @@ protected:
 public:
 
     virtual IEnumerator<T> *GetEnumerator() = 0;
+
+    virtual ~IEnumerable() = default;
 };
 
 #endif //LABA2_IENUMERABLE_H

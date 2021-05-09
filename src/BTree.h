@@ -9,9 +9,137 @@
 
 template<typename T>
 class BTree : public NAryTree<T> {
-    BTree() : NAryTree<T>() {
-        this->root->data.Pop();
+private:
+    class BNode : public NAryTree<T>::template Node<T> {
+    public:
+        using NAryTree<T>::template Node<T>::Node;
+
+        BNode *Search(T k) { // returns NULL if k is not present.
+
+            // Find the first key greater than or equal to k
+            int i = 0;
+            while (i < this->keys.Count() && k > this->keys[i])
+                i++;
+
+            // If the found key is equal to k, return this node
+            if (this->keys[i] == k)
+                return this;
+
+            // If the key is not found here and this is a leaf node
+            if (this->IsLeaf() == true)
+                return nullptr;
+
+            // Go to the appropriate child
+            return this->GetChild(i)->Search(k);
+
+        }
+
+        void InsertNonFull(T k, size_t t) {
+            // Initialize index as index of rightmost element
+            int i = 0;
+
+            // If this is a leaf node
+            if (this->IsLeaf()) {
+                while (i < this->ChildrenCount() && this->keys[i] < k) ++i;
+                if (i < this->keys.Count() && k != this->keys[i])
+                    this->keys.InsertAt(k, i);
+            } else // If this node is not leaf
+            {
+                // Find the child which is going to have the new key
+                while (i < this->ChildrenCount() && this->keys[i] < k) ++i;
+
+                // See if the found child is full
+                if (this->children[i]->keys.Count() == 2 * t - 1) {
+                    // If the child is full, then split it
+                    SplitChild(i, this->GetChild(i), t);
+
+                    // After split, the middle key of C[i] goes up and
+                    // C[i] is splitted into two.  See which of the two
+                    // is going to have the new key
+                    if (this->keys[i] < k)
+                        i++;
+                }
+                this->GetChild(i)->InsertNonFull(k, t);
+            }
+        }
+
+// A utility function to split the child y of this node
+// Note that y must be full when this function is called
+        void SplitChild(int i, BNode *y, size_t t) {
+            // Create a new node which is going to store (t-1) keys
+            // of y
+            BNode *z = new BNode();
+            z->keys.Resize(t - 1);
+
+            // Copy the last (t-1) keys of y to z
+            for (int j = 0; j < t - 1; j++)
+                z->keys[j] = y->keys[j + t];
+
+            // Copy the last t children of y to z
+            z->children.Resize(t);
+            if (y->IsLeaf() == false) {
+                for (int j = 0; j < t; j++)
+                    z->children[j] = y->children[j + t];
+            }
+
+            // Reduce the number of keys in y
+            y->keys.Resize(t - 1);
+
+            // Since this node is going to have a new child,
+            // create space of new child
+            this->children.InsertAt(z, i + 1);
+
+            // Copy the middle key of y to this node
+            this->keys.InsertAt(y->keys[t - 1], i);
+        }
+
+        BNode *GetChild(size_t i) {
+            return static_cast<BNode *>(this->children[i]);
+        }
+    };
+
+
+    size_t t{};
+    BNode *realRoot;
+
+public:
+    BTree() : BTree(3) {}
+
+    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t - 1), t(t) {
+        realRoot = static_cast<BNode *>(this->root);
+        realRoot->keys.PopLast();
     }
+
+    void Insert(T k) {
+        // If root is full, then tree grows in height
+        if (realRoot->keys.Count() == 2 * t - 1) {
+            // Allocate memory for new root
+            BNode *s = new BNode();
+            s->children.Resize(t);
+
+            // Make old root as child of new root
+            s->children[0] = realRoot;
+
+            // Split the old root and move 1 key to the new root
+            s->SplitChild(0, realRoot, t);
+
+            // New root has two children now.  Decide which of the
+            // two children is going to have new key
+            int i = 0;
+            if (s->keys[i] < k)
+                i++;
+            s->GetChild(i)->InsertNonFull(k, t);
+
+            // Change root
+            realRoot = s;
+        } else  // If root is not full, call InsertNonFull for root
+            realRoot->InsertNonFull(k, t);
+
+    }
+
+//    BTree(BTree<T> const &tree) : NAryTree<T>(static_cast<NAryTree<T> *>(&tree)), t(tree.t) {}
+
+
 };
 
 //class BTree
@@ -366,27 +494,27 @@ class BTree : public NAryTree<T> {
 //            s->C[0] = root;
 //
 //            // Split the old root and move 1 key to the new root
-//            s->splitChild(0, root);
+//            s->SplitChild(0, root);
 //
 //            // New root has two children now.  Decide which of the
 //            // two children is going to have new key
 //            int i = 0;
 //            if (s->keys[0] < k)
 //                i++;
-//            s->C[i]->insertNonFull(k);
+//            s->C[i]->InsertNonFull(k);
 //
 //            // Change root
 //            root = s;
 //        }
-//        else  // If root is not full, call insertNonFull for root
-//            root->insertNonFull(k);
+//        else  // If root is not full, call InsertNonFull for root
+//            root->InsertNonFull(k);
 //    }
 //}
 //
 //// A utility function to insert a new key in this node
 //// The assumption is, the node must be non-full when this
 //// function is called
-//void BTreeNode::insertNonFull(int k)
+//void BTreeNode::InsertNonFull(int k)
 //{
 //    // Initialize index as index of rightmost element
 //    int i = n-1;
@@ -417,7 +545,7 @@ class BTree : public NAryTree<T> {
 //        if (C[i+1]->n == 2*t-1)
 //        {
 //            // If the child is full, then split it
-//            splitChild(i+1, C[i+1]);
+//            SplitChild(i+1, C[i+1]);
 //
 //            // After split, the middle key of C[i] goes up and
 //            // C[i] is splitted into two.  See which of the two
@@ -425,13 +553,13 @@ class BTree : public NAryTree<T> {
 //            if (keys[i+1] < k)
 //                i++;
 //        }
-//        C[i+1]->insertNonFull(k);
+//        C[i+1]->InsertNonFull(k);
 //    }
 //}
 //
 //// A utility function to split the child y of this node
 //// Note that y must be full when this function is called
-//void BTreeNode::splitChild(int i, BTreeNode *y)
+//void BTreeNode::SplitChild(int i, BTreeNode *y)
 //{
 //    // Create a new node which is going to store (t-1) keys
 //    // of y

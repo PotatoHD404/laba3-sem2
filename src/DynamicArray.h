@@ -80,7 +80,7 @@ public:
         return DynamicArray(arr, len);
     }
 
-    size_t GetLength() { return length; }
+    size_t Count() { return length; }
 
     T &operator[](size_t index) { return At(index); }
 

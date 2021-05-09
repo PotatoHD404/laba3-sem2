@@ -32,7 +32,7 @@ private:
         if constexpr (static_cast<ICollection<ElType> *>(&current) == nullptr)
             throw std::runtime_error("Wrong type");
         else {
-            size_t count = current.GetLength();
+            size_t count = current.Count();
             vector<tuple<Ts..., ElType>> res2;
             if (min > count)
                 min = count;
@@ -64,7 +64,7 @@ protected:
     Enumerable<T1> *Map(T1 (*mapper)(T)) {
         if (mapper == nullptr)
             throw std::invalid_argument("mapper is NULL");
-        size_t length = this->GetLength();
+        size_t length = this->Count();
         Enumerable<T1> *res = new ChildClass<T1>(length);
         for (size_t i = 0; i < length; i++)
             res->At(i) = mapper(this->At(i));
@@ -76,7 +76,7 @@ protected:
         if (predicate == nullptr)
             throw std::invalid_argument("predicate is NULL");
         Enumerable<T> *res = new ChildClass<T>();
-        for (size_t i = 0; i < this->GetLength(); i++)
+        for (size_t i = 0; i < this->Count(); i++)
             if (predicate(this->At(i)))
                 res->Append(this->At(i));
         return res;
@@ -85,12 +85,12 @@ protected:
 public:
 
     auto Split(size_t pos) {
-        auto res = make_tuple(this->Subsequence(0, pos), this->Subsequence(pos + 1, this->GetLength() - 1));
+        auto res = make_tuple(this->Subsequence(0, pos), this->Subsequence(pos + 1, this->Count() - 1));
         return res;
     }
 
     bool Contains(T item) {
-        for (size_t i = 0; i < this->GetLength(); ++i)
+        for (size_t i = 0; i < this->Count(); ++i)
             if (this->At(i) == item)
                 return true;
         return false;
@@ -102,7 +102,7 @@ public:
         if (f == nullptr)
             throw std::invalid_argument("mapper is NULL");
         T res = c;
-        for (size_t i = 0; i < this->GetLength(); ++i) {
+        for (size_t i = 0; i < this->Count(); ++i) {
             res = f(this->At(i), res);
         }
         return res;
@@ -114,7 +114,7 @@ public:
         if constexpr(IsBadType(&current))
             throw std::runtime_error("Wrong type");
         else {
-            const size_t count = current.GetLength();
+            const size_t count = current.Count();
             vector<tuple<ElType>> res;
             for (size_t i = 0; i < count; i++)
                 res.push_back(make_tuple(current[i]));
@@ -137,6 +137,8 @@ public:
         else
             return UnZip<ChildClass, 1, Ts...>(input, args..., res);
     }
+
+    virtual ~Enumerable() = default;
 };
 
 

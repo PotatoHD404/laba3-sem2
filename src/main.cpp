@@ -54,12 +54,21 @@ int start() {
 }
 
 int main() {
-    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
-    string order = tree.Order("{K}(1)[2]");
-    cout << order << endl;
-    NAryTree<int> res(order, "{K}(1)[2]");
-
-    cout << res.Order("{K}(1)[2]") << endl;
+//    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
+//    string order = tree.Order("{K}(1)[2]");
+//    cout << order << endl;
+//    NAryTree<int> res(order, "{K}(1)[2]");
+    BTree<int> bTree;
+    bTree.Insert(10);
+    bTree.Insert(20);
+    bTree.Insert(30);
+    bTree.Insert(40);
+    bTree.Insert(50);
+    bTree.Insert(60);
+    bTree.Insert(70);
+    bTree.Insert(80);
+    bTree.Insert(90);
+    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
     return 0;
 }
 

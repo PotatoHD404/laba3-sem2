@@ -84,12 +84,12 @@ public:
         return res;
     }
 
-    size_t GetLength() {
+    size_t Count() {
         return items.GetLength();
     }
 
     bool operator==(ListSequence<T> list) {
-        size_t len = list.GetLength();
+        size_t len = list.Count();
         if (len != this->items.GetLength())
             return false;
         for (size_t i = 0; i < len; ++i)
@@ -168,7 +168,7 @@ public:
         for (size_t i = 0; i < items.GetLength(); ++i) {
             res->Append(items.At(i));
         }
-        for (size_t i = 0; i < list.GetLength(); ++i) {
+        for (size_t i = 0; i < list.Count(); ++i) {
             res->Append(list[i]);
         }
         return res;

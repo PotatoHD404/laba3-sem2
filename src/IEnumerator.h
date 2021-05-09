@@ -15,6 +15,8 @@ public:
     virtual void Reset() = 0;
 
     virtual size_t GetLength() = 0;
+
+    virtual ~IEnumerator() = default;
 };
 
 #endif //LABA2_IENUMERATOR_H
