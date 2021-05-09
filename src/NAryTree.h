@@ -96,6 +96,8 @@ protected:
             }
         }
 
+
+
         size_t ChildrenCount() {
             return children.Count();
         }
