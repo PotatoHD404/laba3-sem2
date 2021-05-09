@@ -35,7 +35,7 @@ public:
 
     virtual void Prepend(T item) = 0;
 
-    virtual void InsertAt(T item, size_t index) = 0;
+    virtual void InsertAt(size_t index, T item) = 0;
 
     virtual T PopFirst() = 0;
 

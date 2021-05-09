@@ -145,8 +145,8 @@ public:
         items.Prepend(item);
     }
 
-    void InsertAt(T item, size_t index) {
-        items.InsertAt(item, index);
+    void InsertAt(size_t index, T item) {
+        items.InsertAt(index, item);
     }
 
     T PopFirst() {

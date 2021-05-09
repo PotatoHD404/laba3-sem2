@@ -136,7 +136,7 @@ public:
         items.Set(0, item);
     }
 
-    void InsertAt(T item, size_t index) {
+    void InsertAt(size_t index, T item) {
         items.Resize(items.Count() + 1);
 
         for (size_t i = items.Count() - 1; i > index; --i) {

@@ -26,7 +26,7 @@ protected:
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
-        Node() : Node(T1()) {}
+        Node() : keys(), parent(nullptr), children(ArraySequence<Node<T1> *>()) {}
 
         Node(Node<T1> const &node) : Node(&node) {}
 
@@ -303,7 +303,7 @@ public:
         auto words_begin = sregex_iterator(str.begin(), str.end(), word_regex);
         auto words_end = sregex_iterator();
         const size_t length = distance(words_begin, words_end);
-        if (length != n + 1 || !regex_search(str, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
+        if (!regex_search(str, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
             throw runtime_error("wrong input");
 //        cout << length << endl;
         char brackets[length][2];
@@ -327,8 +327,8 @@ public:
             brackets[num][1] = match_str[match_str.size() - 1];
             ++j;
         }
-        if (length != n + 1)
-            throw runtime_error("wrong indexes: N != n + 1");
+//        if (length != n + 1)
+//            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
             throw runtime_error("Root is NULL");
         stringstream buffer;
@@ -352,7 +352,6 @@ public:
         VisitNode(root, -1);
         return buffer.str();
     }
-
 
 
     NAryTree<T> Subtree(initializer_list<size_t> indexes) {

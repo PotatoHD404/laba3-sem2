@@ -14,48 +14,96 @@ private:
     public:
         using NAryTree<T>::template Node<T>::Node;
 
-        BNode *Search(T k) { // returns NULL if k is not present.
-
-            // Find the first key greater than or equal to k
-            int i = 0;
-            while (i < this->keys.Count() && k > this->keys[i])
-                i++;
-
-            // If the found key is equal to k, return this node
+        BNode *Search(T k) {
+            size_t i = FindKey(k);
             if (this->keys[i] == k)
                 return this;
 
-            // If the key is not found here and this is a leaf node
             if (this->IsLeaf() == true)
                 return nullptr;
-
-            // Go to the appropriate child
             return this->GetChild(i)->Search(k);
 
         }
 
+        void RemoveFromLeaf(size_t idx) {
+            this->keys.RemoveAt(idx);
+        }
+
+        void RemoveFromNonLeaf(size_t idx) {
+            T k = this->keys[idx];
+
+            // If the child that precedes k (C[idx]) has at least t keys,
+            // find the predecessor 'pred' of k in the subtree rooted at
+            // C[idx]. Replace k by pred. Recursively delete pred
+            // in C[idx]
+            if (this->children[idx]->keys.Count() >= t) {
+                size_t pred = GetPred(idx);
+                this->keys[idx] = pred;
+                GetChild(idx)->remove(pred);
+            }
+
+                // If the child C[idx] has less that t keys, examine C[idx+1].
+                // If C[idx+1] has at least t keys, find the successor 'succ' of k in
+                // the subtree rooted at C[idx+1]
+                // Replace k by succ
+                // Recursively delete succ in C[idx+1]
+            else if (C[idx + 1]->n >= t) {
+                size_t next = getSucc(idx);
+                keys[idx] = succ;
+                C[idx + 1]->remove(succ);
+            }
+
+                // If both C[idx] and C[idx+1] has less that t keys,merge k and all of C[idx+1]
+                // into C[idx]
+                // Now C[idx] contains 2t-1 keys
+                // Free C[idx+1] and recursively delete k from C[idx]
+            else {
+                merge(idx);
+                C[idx]->remove(k);
+            }
+        }
+
+        // A function to get predecessor of keys[idx]
+        T GetPred(size_t idx)
+        {
+            // Keep moving to the right most node until we reach a leaf
+            BTreeNode *cur=C[idx];
+            while (!cur->leaf)
+                cur = cur->C[cur->n];
+
+            // Return the last key of the leaf
+            return cur->keys[cur->n-1];
+        }
+
+        T GetNext(size_t idx)
+        {
+            // Keep moving the left most node starting from C[idx+1] until we reach a leaf
+            BTreeNode *cur = C[idx+1];
+            while (!cur->leaf)
+                cur = cur->C[0];
+
+            // Return the first key of the leaf
+            return cur->keys[0];
+        }
+
+
+        size_t FindKey(T k) {
+            size_t res = 0;
+            while (res < this->keys.Count() && this->keys[res] < k)
+                ++res;
+            return res;
+        }
+
         void InsertNonFull(T k, size_t t) {
-            // Initialize index as index of rightmost element
-            int i = 0;
-
-            // If this is a leaf node
+            size_t i = FindKey(k);
             if (this->IsLeaf()) {
-                while (i < this->ChildrenCount() && this->keys[i] < k) ++i;
-                if (i < this->keys.Count() && k != this->keys[i])
-                    this->keys.InsertAt(k, i);
-            } else // If this node is not leaf
-            {
-                // Find the child which is going to have the new key
-                while (i < this->ChildrenCount() && this->keys[i] < k) ++i;
-
-                // See if the found child is full
+                if (i < this->keys.Count()) {
+                    if (k != this->keys[i])
+                        this->keys.InsertAt(i, k);
+                } else this->keys.InsertAt(i, k);
+            } else {
                 if (this->children[i]->keys.Count() == 2 * t - 1) {
-                    // If the child is full, then split it
                     SplitChild(i, this->GetChild(i), t);
-
-                    // After split, the middle key of C[i] goes up and
-                    // C[i] is splitted into two.  See which of the two
-                    // is going to have the new key
                     if (this->keys[i] < k)
                         i++;
                 }
@@ -63,34 +111,20 @@ private:
             }
         }
 
-// A utility function to split the child y of this node
-// Note that y must be full when this function is called
-        void SplitChild(int i, BNode *y, size_t t) {
-            // Create a new node which is going to store (t-1) keys
-            // of y
+        void SplitChild(size_t i, BNode *y, size_t t) {
             BNode *z = new BNode();
             z->keys.Resize(t - 1);
-
-            // Copy the last (t-1) keys of y to z
-            for (int j = 0; j < t - 1; j++)
+            for (size_t j = 0; j < t - 1; j++)
                 z->keys[j] = y->keys[j + t];
 
-            // Copy the last t children of y to z
-            z->children.Resize(t);
-            if (y->IsLeaf() == false) {
-                for (int j = 0; j < t; j++)
-                    z->children[j] = y->children[j + t];
+            if (!y->IsLeaf()) {
+                for (size_t j = 0; j < t; j++)
+                    z->children.Append(y->children[j + t]);
             }
 
-            // Reduce the number of keys in y
+            this->children.InsertAt(i + 1, z);
+            this->keys.InsertAt(i, y->keys[t - 1]);
             y->keys.Resize(t - 1);
-
-            // Since this node is going to have a new child,
-            // create space of new child
-            this->children.InsertAt(z, i + 1);
-
-            // Copy the middle key of y to this node
-            this->keys.InsertAt(y->keys[t - 1], i);
         }
 
         BNode *GetChild(size_t i) {
@@ -100,44 +134,32 @@ private:
 
 
     size_t t{};
-    BNode *realRoot;
 
 public:
     BTree() : BTree(3) {}
 
-    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t - 1), t(t) {
-        realRoot = static_cast<BNode *>(this->root);
-        realRoot->keys.PopLast();
-    }
+    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t - 1), t(t) {}
 
     void Insert(T k) {
-        // If root is full, then tree grows in height
-        if (realRoot->keys.Count() == 2 * t - 1) {
-            // Allocate memory for new root
+        if (static_cast<BNode *>(this->root)->keys.Count() == 2 * t - 1) {
             BNode *s = new BNode();
-            s->children.Resize(t);
-
-            // Make old root as child of new root
-            s->children[0] = realRoot;
-
-            // Split the old root and move 1 key to the new root
-            s->SplitChild(0, realRoot, t);
-
-            // New root has two children now.  Decide which of the
-            // two children is going to have new key
-            int i = 0;
+            s->children.Append(this->root);
+            s->SplitChild(0, static_cast<BNode *>(this->root), t);
+            size_t i = 0;
             if (s->keys[i] < k)
                 i++;
             s->GetChild(i)->InsertNonFull(k, t);
 
-            // Change root
-            realRoot = s;
-        } else  // If root is not full, call InsertNonFull for root
-            realRoot->InsertNonFull(k, t);
-
+            this->root = s;
+        } else
+            static_cast<BNode *>(this->root)->InsertNonFull(k, t);
     }
 
-//    BTree(BTree<T> const &tree) : NAryTree<T>(static_cast<NAryTree<T> *>(&tree)), t(tree.t) {}
+    bool Search(T key) {
+        return static_cast<BNode *>(this->root)->Search(key) != nullptr;
+    }
+
+    BTree(BTree<T> const &tree) : NAryTree<T>(static_cast<NAryTree<T> *>(&tree)), t(tree.t) {}
 
 
 };

@@ -236,7 +236,7 @@ public:
     ///
     /// \param item
     /// \param index
-    void InsertAt(T item, size_t index) {
+    void InsertAt(size_t index, T item) {
         if (index < 0 || index >= length)
             throw range_error("index < 0 or index >= length");
         if (index == length - 1) {
