@@ -46,10 +46,17 @@ string readline() {
 
 
 int start() {
-    for (int i = 0; i < 10; ++i) {
-        string c = readline();
-        cout << "Hello from your wasm module " << i << " " << c << endl;
+//    for (int i = 0; i < 10; ++i) {
+//        string c = readline();
+//        cout << "Hello from your wasm module " << i << " " << c << endl;
+//    }
+    BTree<int> bTree(3);
+    for (int i = 0; i < 1500000; ++i) {
+        bTree.Insert(i);
+//        cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
     }
+    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+//    cerr << "time taken : " << (float) clock() / CLOCKS_PER_SEC * 1000 << " milisecs" << endl;
     return 0;
 }
 
@@ -59,13 +66,14 @@ int main() {
 //    cout << order << endl;
 //    NAryTree<int> res(order, "{K}(1)[2]");
     BTree<int> bTree(3);
-    for (int i = 0; i < 28; ++i) {
+    for (int i = 0; i < 1000000; ++i) {
         bTree.Insert(i);
         cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
     }
     bTree.Remove(8);
     bTree.Remove(17);
     cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC * 100 << " secs" << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)
 //            int a = 0;

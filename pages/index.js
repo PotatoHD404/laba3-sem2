@@ -23,7 +23,7 @@ const Page = () => {
     useEffect(async () => {
         instance = await Module({
             'print': (data) => {
-                console.log("Working!!!");
+                console.log(data);
             },
             locateFile: () => {
                 return Laba3WASM
