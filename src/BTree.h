@@ -212,8 +212,9 @@ private:
                 for (size_t i = 0; i <= sibling->keys.Count(); ++i)
                     child->children.Append(sibling->children[i]);
             }
-            for (size_t i = idx + 1; i < this->keys.Count(); ++i)
-                this->keys[i - 1] = this->keys[i];
+//            for (size_t i = idx + 1; i < this->keys.Count(); ++i)
+//                this->keys[i - 1] = this->keys[i];
+            this->keys.RemoveAt(idx);
             this->children.RemoveAt(idx + 1);
             sibling->children.Clear();
             delete sibling;

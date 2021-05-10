@@ -64,6 +64,7 @@ int main() {
         cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
     }
     bTree.Remove(8);
+    bTree.Remove(17);
     cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)
