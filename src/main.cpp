@@ -1,3 +1,7 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
+#pragma GCC optimize("unroll-loops")
+
 #include <iostream>
 #include "Complex.h"
 #include "NAryTree.h"
@@ -59,13 +63,14 @@ int main() {
 //    cout << order << endl;
 //    NAryTree<int> res(order, "{K}(1)[2]");
     BTree<int> bTree(3);
-    for (int i = 0; i < 28; ++i) {
+    for (int i = 0; i < 10000000; ++i) {
         bTree.Insert(i);
-        cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+//        cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
     }
-    bTree.Remove(8);
-    bTree.Remove(17);
-    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+    cerr << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
+//    bTree.Remove(8);
+//    bTree.Remove(17);
+//    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)
 //            int a = 0;
