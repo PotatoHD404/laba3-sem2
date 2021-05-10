@@ -58,13 +58,22 @@ int main() {
 //    string order = tree.Order("{K}(1)[2]");
 //    cout << order << endl;
 //    NAryTree<int> res(order, "{K}(1)[2]");
-    BTree<int> bTree;
-    for (int i = 0; i < 30; ++i) {
+    BTree<int> bTree(3);
+    for (int i = 0; i < 28; ++i) {
         bTree.Insert(i);
-        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+        cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
     }
     bTree.Remove(8);
-    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+//    for (int i = 0; i < 19; ++i) {
+//        if(i == 9)
+//            int a = 0;
+//        cout << bTree.Search(i) << endl;
+//    }
+//        bTree.Insert(0);
+//        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+//    bTree.Remove(8);
+//    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
     return 0;
 }
 

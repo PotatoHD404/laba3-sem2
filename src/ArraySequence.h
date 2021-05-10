@@ -210,13 +210,9 @@ public:
         items.Resize(0);
     }
 
-    ArraySequence<T> *Concat(const Sequence<T> &list) {
-        return Concat(dynamic_cast<ArraySequence<T>>(list));
-    }
-
-    ArraySequence<T> *Concat(const ArraySequence<T> *list) {
-        return Concat(*list);
-    }
+//    ArraySequence<T> *Concat(const ArraySequence<T> *list) {
+//        return Concat(*list);
+//    }
 
     ArraySequence<T> &operator=(const ArraySequence<T> &list) {
         items = DynamicArray<T>(list.items);

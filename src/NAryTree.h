@@ -1,5 +1,3 @@
-#pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
-#pragma ide diagnostic ignored "modernize-use-auto"
 //
 // Created by korna on 30.04.2021.
 //
@@ -26,7 +24,7 @@ protected:
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
-        Node() : keys(), parent(nullptr), children(ArraySequence<Node<T1> *>()) {}
+        Node() : keys(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
 
         Node(Node<T1> const &node) : Node(&node) {}
 
@@ -97,7 +95,6 @@ protected:
         }
 
 
-
         size_t ChildrenCount() {
             return children.Count();
         }
@@ -165,7 +162,7 @@ public:
 
     NAryTree(NAryTree<T> const &tree) : root(new Node<T>(tree.root)), n(tree.n) {}
 
-    NAryTree(Node<T> *root, size_t n) : root(root), n(n) {}
+    NAryTree(Node<T> *root, size_t n) : n(n), root(root) {}
 
     explicit NAryTree(const string &input) : NAryTree() {
         // "123 123 + 3232 32 123 - 32"
@@ -304,7 +301,7 @@ public:
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
         auto words_begin = sregex_iterator(str.begin(), str.end(), word_regex);
         auto words_end = sregex_iterator();
-        const size_t length = distance(words_begin, words_end);
+        size_t length = distance(words_begin, words_end);
         if (!regex_search(str, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
             throw runtime_error("wrong input");
 //        cout << length << endl;
@@ -329,23 +326,29 @@ public:
             brackets[num][1] = match_str[match_str.size() - 1];
             ++j;
         }
+        if (length >= n) {
+            indexes[0] = n;
+            brackets[n][0] = brackets[--length][0];
+            brackets[n][1] = brackets[length][1];
+            length = n + 1;
+        }
 //        if (length != n + 1)
 //            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
             throw runtime_error("Root is NULL");
         stringstream buffer;
-        function<void(Node<T> *, size_t)> VisitNode = [&](Node<T> *node, size_t br) {
+        function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
             if (br != -1)
                 buffer << brackets[indexes[br]][0];
-            for (int i = 0; i < length; ++i)
-                if (indexes[i] == n) {
-                    buffer << brackets[n][0];
-                    for (int k = 0; k < node->keys.Count(); ++k) {
+            for (size_t i = 0; i < length; ++i)
+                if (indexes[i] == length - 1) {
+                    buffer << brackets[length - 1][0];
+                    for (size_t k = 0; k < node->keys.Count(); ++k) {
                         buffer << node->keys[k];
                         if (k != node->keys.Count() - 1)
                             buffer << " ";
                     }
-                    buffer << brackets[n][1];
+                    buffer << brackets[length - 1][1];
                 } else if (indexes[i] < node->ChildrenCount())
                     VisitNode(node->children[indexes[i]], i);
             if (br != -1)

@@ -174,13 +174,9 @@ public:
         return res;
     }
 
-    ListSequence<T> *Concat(const Sequence<T> &list) {
-        return Concat(dynamic_cast<ListSequence<T>>(list));
-    }
-
-    ListSequence<T> *Concat(const ListSequence<T> *list) {
-        return Concat(*list);
-    }
+//    ListSequence<T> *Concat(const ListSequence<T> *list) {
+//        return Concat(*list);
+//    }
 
     ListSequence<T> &operator=(const ListSequence<T> &list) {
         items = LinkedList<T>(list.items);
