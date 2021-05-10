@@ -21,10 +21,10 @@ protected:
     class Node {
     public:
         ArraySequence<T1> keys;
-        ArraySequence<Node<T1> *> C;
+        ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
-        Node() : keys(), C(ArraySequence<Node<T1> *>()), parent(nullptr) {}
+        Node() : keys(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
 
         Node(Node<T1> const &node) : Node(&node) {}
 
@@ -39,10 +39,10 @@ protected:
                 Node<T1> *tmp = s1.Pop();
                 tmp->keys = node->keys;
                 for (int i = 0; i < node->ChildrenCount(); ++i)
-                    if (node->C[i] != NULL) {
+                    if (node->children[i] != NULL) {
                         tmp->AddChild();
-                        s.Push(node->C[i]);
-                        s1.Push(tmp->C[i]);
+                        s.Push(node->children[i]);
+                        s1.Push(tmp->children[i]);
                     }
             }
         }
@@ -58,10 +58,10 @@ protected:
                 Node<T1> *tmp = s1.Pop();
                 tmp->keys = node->keys.Map(mapper);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
-                    if (node->C[i] != NULL) {
+                    if (node->children[i] != NULL) {
                         tmp->AddChild();
-                        s.Push(node->C[i]);
-                        s1.Push(tmp->C[i]);
+                        s.Push(node->children[i]);
+                        s1.Push(tmp->children[i]);
                     }
             }
         }
@@ -75,10 +75,7 @@ protected:
                 Node(data, parent, ArraySequence<Node<T1> *>(children)) {}
 
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys({data}), parent(parent), C(children) {}
-
-        Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
-                keys(keys), parent(parent), C(children) {}
+                keys({data}), parent(parent), children(children) {}
 
         T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
             if (f == nullptr)
@@ -91,39 +88,39 @@ protected:
                 Node<T> *node = s.Pop();
                 res = node->keys.Reduce(f, res);
                 for (int i = 0; i < node->ChildrenCount(); ++i)
-                    if (node->C[i] != NULL)
-                        s.Push(node->C[i]);
+                    if (node->children[i] != NULL)
+                        s.Push(node->children[i]);
 
             }
         }
 
 
         size_t ChildrenCount() {
-            return C.Count();
+            return children.Count();
         }
 
         bool IsLeaf() {
-            return C.Count() == 0;
+            return children.Count() == 0;
         }
 
         Node<T1> *GetLastChild() {
-            return C.GetLast();
+            return children.GetLast();
         }
 
         void AddChild(Node<T1> *child) {
             child->parent = this;
-            C.Append(child);
+            children.Append(child);
         }
 
         void AddChild() {
             Node<T1> *child = new Node<T1>();
             child->parent = this;
-            C.Append(child);
+            children.Append(child);
         }
 
         ~Node() {
-            for (size_t i = 0; i < C.Count(); ++i) {
-                delete C[i];
+            for (size_t i = 0; i < children.Count(); ++i) {
+                delete children[i];
             }
         }
     };
@@ -134,7 +131,7 @@ protected:
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
         for (size_t item : indexes)
-            res = res->C[item];
+            res = res->children[item];
         return res;
     }
 
@@ -142,7 +139,7 @@ protected:
     Node<T> *GetNode(const size_t (&indexes)[N]) {
         Node<T> *res = root;
         for (size_t i = 0; i < N; ++i) {
-            res = res->C[indexes[i]];
+            res = res->children[indexes[i]];
         }
         return res;
     }
@@ -153,7 +150,7 @@ protected:
         ArraySequence<Node<T> *> res;
         for (size_t i = 0; i < N; ++i) {
             res.Append(tmp);
-            tmp = tmp->C[indexes[i]];
+            tmp = tmp->children[indexes[i]];
         }
         return res;
     }
@@ -269,7 +266,7 @@ public:
                 bracketSequence.Push(str[i]);
                 while (node->ChildrenCount() <= found1)
                     node->AddChild();
-                node = node->C[found1];
+                node = node->children[found1];
             } else if (rootBr[0] == str[i]) {
                 bracketSequence.Push(str[i]);
                 tmp = i;
@@ -353,7 +350,7 @@ public:
                     }
                     buffer << brackets[length - 1][1];
                 } else if (indexes[i] < node->ChildrenCount())
-                    VisitNode(node->C[indexes[i]], i);
+                    VisitNode(node->children[indexes[i]], i);
             if (br != -1)
                 buffer << brackets[indexes[br]][1];
         };
