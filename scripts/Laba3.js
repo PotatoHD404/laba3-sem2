@@ -2703,6 +2703,41 @@ function do_fetch(){ return Asyncify.handleAsync(async () => { out("waiting for 
       abort();
     }
 
+  function _clock() {
+      if (_clock.start === undefined) _clock.start = Date.now();
+      return ((Date.now() - _clock.start) * (1000000 / 1000))|0;
+    }
+
+  var _emscripten_get_now;if (ENVIRONMENT_IS_NODE) {
+    _emscripten_get_now = function() {
+      var t = process['hrtime']();
+      return t[0] * 1e3 + t[1] / 1e6;
+    };
+  } else _emscripten_get_now = function() { return performance.now(); }
+  ;
+  
+  var _emscripten_get_now_is_monotonic=true;;
+  
+  function setErrNo(value) {
+      HEAP32[((___errno_location())>>2)] = value;
+      return value;
+    }
+  function _clock_gettime(clk_id, tp) {
+      // int clock_gettime(clockid_t clk_id, struct timespec *tp);
+      var now;
+      if (clk_id === 0) {
+        now = Date.now();
+      } else if ((clk_id === 1 || clk_id === 4) && _emscripten_get_now_is_monotonic) {
+        now = _emscripten_get_now();
+      } else {
+        setErrNo(28);
+        return -1;
+      }
+      HEAP32[((tp)>>2)] = (now/1000)|0; // seconds
+      HEAP32[(((tp)+(4))>>2)] = ((now % 1000)*1000*1000)|0; // nanoseconds
+      return 0;
+    }
+
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.copyWithin(dest, src, src + num);
     }
@@ -5268,6 +5303,16 @@ function do_fetch(){ return Asyncify.handleAsync(async () => { out("waiting for 
   }
   }
 
+  function _getentropy(buffer, size) {
+      if (!_getentropy.randomDevice) {
+        _getentropy.randomDevice = getRandomDevice();
+      }
+      for (var i = 0; i < size; i++) {
+        HEAP8[(((buffer)+(i))>>0)] = _getentropy.randomDevice()
+      }
+      return 0;
+    }
+
   function _setTempRet0(val) {
       setTempRet0(val);
     }
@@ -5918,6 +5963,8 @@ var asmLibraryArg = {
   "_embind_register_std_wstring": __embind_register_std_wstring,
   "_embind_register_void": __embind_register_void,
   "abort": _abort,
+  "clock": _clock,
+  "clock_gettime": _clock_gettime,
   "do_fetch": do_fetch,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
@@ -5927,6 +5974,7 @@ var asmLibraryArg = {
   "fd_read": _fd_read,
   "fd_seek": _fd_seek,
   "fd_write": _fd_write,
+  "getentropy": _getentropy,
   "setTempRet0": _setTempRet0,
   "strftime_l": _strftime_l
 };

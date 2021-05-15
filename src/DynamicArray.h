@@ -55,14 +55,14 @@ public:
 
     //Decomposition
     T &At(size_t index) {
-        if (index < 0 || index >= length)
-            throw out_of_range("index < 0 or index >= length");
+//        if (index < 0 || index >= length)
+//            throw out_of_range("index < 0 or index >= length");
         return actual_array[index];
     }
 
     void Set(size_t index, T value) {
-        if (index < 0 || index >= length)
-            throw range_error("index < 0 or index >= length");
+//        if (index < 0 || index >= length)
+//            throw range_error("index < 0 or index >= length");
         At(index) = value;
     }
 
@@ -94,7 +94,7 @@ public:
         if (new_length > 0) {
             new_array = new T[new_length]();
             size_t len = new_length > length ? length : new_length;
-            memcpy(new_array, actual_array, sizeof(T) * len);
+            memmove(new_array, actual_array, sizeof(T) * len);
         } else new_array = new T[1]();
         delete[] actual_array;
         length = new_length;

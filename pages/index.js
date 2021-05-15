@@ -1,10 +1,12 @@
 // noinspection JSFileReferences,NpmUsedModulesInstalled,JSUnresolvedFunction
-
+import Head from "next/head";
 import {useEffect} from 'react'
 import {withRouter} from 'next/router'
 
-import Module from './../public/wasm/Laba3.js';
-import Laba3WASM from './../public/wasm/Laba3.wasm'
+process.hrtime = require('browser-process-hrtime')
+
+import Module from './../scripts/Laba3.js';
+import Laba3WASM from './../scripts/Laba3.wasm'
 
 
 let instance;
@@ -33,19 +35,26 @@ const Page = () => {
         console.log(instance.start());
     })
 
-    return (<div>
-            <graph indexType="custom" height="400" width="400" nodes={[{label: 0, center: {x: 203.3, y: 68.3}}, {
-                label: "1",
-                center: {x: 60, y: 214.6}
-            }, {label: "2", center: {x: 401.5, y: 123.6}}, {label: 3, center: {x: 146.1, y: 401.5}}, {
-                label: 4,
-                center: {x: 326.5, y: 314.7}
-            }]} edges={[{source: 0, target: 1}, {source: 0, target: 2}, {source: 4, target: 2}, {
-                source: 3,
-                target: 1
-            }]}/>
-            <button onClick={click}>sometext</button>
-        </div>
+    return (<>
+            <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Main</title>
+            </Head>
+            <div className={"container-fluid"}>
+                <div className={"row mt-5 justify-content-center "}>
+                    <div className={"col-5 d-flex justify-content-center"}>
+                        <button className={"btn btn-outline-secondary align-self-start mt-3"} onClick={click}>Start</button>
+                    </div>
+                    <div className={"col-5"}>
+                        <div className={"row"}>
+                        <textarea className="form-control mb-3 mt-2" id="consoleOutput" rows="5"
+                                  readOnly/></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </>
     );
 }
 

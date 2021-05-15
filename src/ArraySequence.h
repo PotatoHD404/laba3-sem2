@@ -189,6 +189,10 @@ public:
         return res;
     }
 
+    T &operator[](size_t index) {
+        return items[index];
+    }
+
     template<typename T1>
     ArraySequence<T1> Map(T1 (*mapper)(T)) {
         ArraySequence<T1> *res = dynamic_cast<ArraySequence<T1> *>(Enumerable<T>::template Map<T1, ArraySequence>(

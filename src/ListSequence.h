@@ -88,6 +88,10 @@ public:
         return items.GetLength();
     }
 
+    T &operator[](size_t index) {
+        return items[index];
+    }
+
     bool operator==(ListSequence<T> list) {
         size_t len = list.Count();
         if (len != this->items.GetLength())

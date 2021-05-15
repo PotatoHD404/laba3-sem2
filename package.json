@@ -2,18 +2,15 @@
   "name": "laba3",
   "version": "0.0.1",
   "dependencies": {
-    "@wasm/studio-utils": "^0.0.3",
+    "@popperjs/core": "^2.9.2",
     "babel-loader": "^8.2.2",
-    "fs": "^0.0.1-security",
-    "got": "^11.8.2",
-    "mem": "^8.1.1",
+    "bootstrap": "^5.0.0-beta3",
+    "browser-process-hrtime": "^1.0.0",
     "next": "^10.2.0",
-    "perf_hooks": "^0.0.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "sass": "^1.32.13",
     "ts-node": "^9.1.1",
-    "wasi": "^0.0.6",
-    "webassembly": "^0.11.0",
     "yarn": "^1.22.10"
   },
   "scripts": {
@@ -26,7 +23,6 @@
   "devDependencies": {
     "@types/react": "^17.0.4",
     "file-loader": "^6.2.0",
-    "gulp": "^4.0.2",
     "typescript": "^4.2.4"
   }
 }

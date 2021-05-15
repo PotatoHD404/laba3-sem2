@@ -77,6 +77,9 @@ protected:
         Node(T1 data, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
                 keys({data}), parent(parent), children(children) {}
 
+        Node(ArraySequence<T1> keys, Node<T1> *parent, ArraySequence<Node<T1> *> children) :
+                keys(keys), parent(parent), children(children) {}
+
         T1 Reduce(T1(*f)(T1, T1), T1 const &c) {
             if (f == nullptr)
                 throw invalid_argument("mapper is NULL");
@@ -344,9 +347,10 @@ public:
                 if (indexes[i] == length - 1) {
                     buffer << brackets[length - 1][0];
                     for (size_t k = 0; k < node->keys.Count(); ++k) {
-                        buffer << node->keys[k];
-                        if (k != node->keys.Count() - 1)
-                            buffer << " ";
+                            buffer << node->keys[k];
+                            if (k != node->keys.Count() - 1)
+                                buffer << " ";
+
                     }
                     buffer << brackets[length - 1][1];
                 } else if (indexes[i] < node->ChildrenCount())

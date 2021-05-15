@@ -28,7 +28,7 @@ public:
 
 //    virtual size_t Count() = 0;
 
-    T &operator[](size_t index) { return At(index); }
+    virtual T &operator[](size_t index) = 0;
 
     //Operations
     virtual void Append(T item) = 0;

@@ -1,5 +1,5 @@
 module.exports = {
-    webpack (config, { isServer }) {
+    webpack(config, {isServer}) {
         config.output.webassemblyModuleFilename = 'static/build/[modulehash].build'
         config.module.rules.push({
             test: /\.(wasm)$/,
