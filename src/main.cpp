@@ -21,7 +21,6 @@ using namespace std::chrono;
 
 EM_JS(const char *, do_fetch, (), {
 return Asyncify.handleAsync(async () => {
-out("waiting for a fetch");
         let promise = new Promise(function(resolve, reject){
             Module.promiseResolve = resolve;
             Module.promiseReject = reject;
@@ -30,8 +29,6 @@ out("waiting for a fetch");
         let lengthBytes = lengthBytesUTF8(res)+1;
         let stringOnWasmHeap = _malloc(lengthBytes);
         stringToUTF8(res, stringOnWasmHeap, lengthBytes);
-
-        out("got the fetch response");
         return stringOnWasmHeap;
 });
 });
@@ -74,13 +71,16 @@ int main() {
 //    cout << order << endl;
 //    NAryTree<int> res(order, "{K}(1)[2]");
     int iterations = 1000;
+#ifdef __EMSCRIPTEN__
+    readline();
+    stringstream ss(readline());
+    ss >> iterations;
+#endif
     std::random_device rd;
     std::mt19937 mt(rd());
     uniform_int_distribution<int> intDistro(0, iterations * 10);
     BTree<int> bTree(3);
-#ifdef __EMSCRIPTEN__
-    string c = readline();
-#endif
+
     for (int i = 0; i < iterations; ++i) {
         int tmp = intDistro(mt);
         auto start = high_resolution_clock::now();
@@ -100,7 +100,7 @@ int main() {
 //    bTree.Remove(8);
 //    bTree.Remove(17);
 //    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
-    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
+//    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)
 //            int a = 0;

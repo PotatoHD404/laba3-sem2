@@ -3,37 +3,71 @@ import Head from "next/head";
 import {useEffect} from 'react'
 import {withRouter} from 'next/router'
 
-process.hrtime = require('browser-process-hrtime')
-
-import Module from './../scripts/Laba3.js';
-import Laba3WASM from './../scripts/Laba3.wasm'
-
-
-let instance;
-
-function click() {
-    if (instance?.promiseResolve !== undefined) {
-        console.log("workin)");
-        instance.promiseResolve("32");
-    } else {
-        console.log("Not workin(");
-    }
-}
-
-
 const Page = () => {
+    let worker;
     useEffect(async () => {
-        instance = await Module({
-            'print': (data) => {
-                console.log(data);
-            },
-            locateFile: () => {
-                return Laba3WASM
-            },
-        });
+        // let instance = await Laba3({
+        //     'print': (data) => {
+        //         postMessage(data);
+        //     },
+        //     locateFile: () => {
+        //         return Laba3WASM
+        //     },
+        // });
 
-        console.log(instance.start());
-    })
+        worker = new Worker('/workers/main.worker.js', {type: "module"});
+        worker.addEventListener('message', (e) => {
+            if (e && e.data) {
+                print(e.data);
+            }
+        });
+        worker.postMessage('init');
+        // }, [worker]);
+        // useEffect(() => {
+        //
+        //     // this.worker.postMessage('from Host');
+        //     // worker.addEventListener('message', function (e) {
+        //     //
+        //     // });
+        // });
+    });
+
+    function Command(input) {
+        switch (input) {
+            case 'type':
+                worker.postMessage('');
+                document.getElementById("type").classList.add("d-none");
+                document.getElementById("menu").classList.remove("d-none");
+                break;
+            case 'input':
+                worker.postMessage(document.getElementById("setInput").value);
+                break;
+        }
+    }
+
+    function print(data) {
+        // console.log(data);
+        document.getElementById("consoleOutput").innerHTML += data + '\r\n';
+        let textarea = document.getElementById("consoleOutput");
+        let temp = textarea.scrollTop;
+        let interval = setInterval(() => {
+            let end = textarea.scrollHeight;
+            if (temp < end) {
+                textarea.scrollTop += 50;
+                temp += 50;
+            } else {
+                clearInterval(interval);
+            }
+        }, 5);
+
+    }
+
+    // componentDidMount() {
+    //
+    // }
+    // componentWillUnmount() {
+    //     this.worker.terminate();
+    // }
 
     return (<>
             <Head>
@@ -55,11 +89,15 @@ const Page = () => {
                                 <option value="int">int</option>
                                 <option value="float">float</option>
                                 <option value="complex">complex</option>
+                                <option value="string">string</option>
+                                <option value="function">function</option>
+                                <option value="students">students</option>
+                                <option value="teacher">teacher</option>
                             </select>
 
                             <div className="input-group-append">
                                 <button className="btn btn-outline-secondary" type="button"
-                                        onClick={Command("type")}>Set type
+                                        onClick={() => Command("type")}>Set type
                                 </button>
                             </div>
                         </div>
@@ -79,7 +117,7 @@ const Page = () => {
                                    aria-label="input"/>
                             <div className="input-group-append">
                                 <button className="btn btn-outline-secondary" type="button"
-                                        onClick={Command("input")}>Set
+                                        onClick={() => Command("input")}>Set
                                 </button>
                             </div>
                             <div className="invalid-feedback">
@@ -89,87 +127,86 @@ const Page = () => {
                                 Your input was sent
                             </div>
                         </div>
-                        <div className="input-group mb-3">
-                            <div className="input-group-prepend">
+                        {/*<div className="input-group mb-3">*/}
+                        {/*    <div className="input-group-prepend">*/}
 
-                                <select className="form-select" aria-label="Default select example"
-                                        id="scalarMultiplySelect">
-                                    <option value="a">A</option>
-                                    <option value="b">B</option>
-                                </select>
+                        {/*        <select className="form-select" aria-label="Default select example"*/}
+                        {/*                id="scalarMultiplySelect">*/}
+                        {/*            <option value="a">A</option>*/}
+                        {/*            <option value="b">B</option>*/}
+                        {/*        </select>*/}
 
-                            </div>
-                            <input type="text" className="form-control" placeholder="Multiply poly on scalar"
-                                   aria-label="input"
-                                   id="scalarMultiplyInput"/>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button"
-                                        onClick={Command("scalarMultiply")}>
-                                    Multiply
-                                </button>
-                            </div>
-                            <div className="invalid-feedback">
-                                Invalid input
-                            </div>
-                            <div className="valid-feedback">
-                                Your input was sent
-                            </div>
-                        </div>
+                        {/*    </div>*/}
+                        {/*    <input type="text" className="form-control" placeholder="Multiply poly on scalar"*/}
+                        {/*           aria-label="input"*/}
+                        {/*           id="scalarMultiplyInput"/>*/}
+                        {/*    <div className="input-group-append">*/}
+                        {/*        <button className="btn btn-outline-secondary" type="button"*/}
+                        {/*                onClick={Command("scalarMultiply")}>*/}
+                        {/*            Multiply*/}
+                        {/*        </button>*/}
+                        {/*    </div>*/}
+                        {/*    <div className="invalid-feedback">*/}
+                        {/*        Invalid input*/}
+                        {/*    </div>*/}
+                        {/*    <div className="valid-feedback">*/}
+                        {/*        Your input was sent*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
-                        <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                                <select className="form-select" aria-label="Default select example" id="calcPolySelect">
-                                    <option value="a">A</option>
-                                    <option value="b">B</option>
-                                </select>
-                            </div>
-                            <input type="text" className="form-control" placeholder="Calculate poly in x"
-                                   aria-label="input"
-                                   id="calcPolyInput">
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-secondary" type="button"
-                                            onClick={Command("calc")}>Calculate
-                                    </button>
-                                </div>
-                                <div className="invalid-feedback">
-                                    Invalid input
-                                </div>
-                                <div className="valid-feedback">
-                                    Your input was sent
-                                </div>
-                            </input>
-                        </div>
+                        {/*<div className="input-group mb-3">*/}
+                        {/*    <div className="input-group-prepend">*/}
+                        {/*        <select className="form-select" aria-label="Default select example" id="calcPolySelect">*/}
+                        {/*            <option value="a">A</option>*/}
+                        {/*            <option value="b">B</option>*/}
+                        {/*        </select>*/}
+                        {/*    </div>*/}
+                        {/*    <input type="text" className="form-control" placeholder="Calculate poly in x"*/}
+                        {/*           aria-label="input"*/}
+                        {/*           id="calcPolyInput"/>*/}
+                        {/*    <div className="input-group-append">*/}
+                        {/*        <button className="btn btn-outline-secondary" type="button"*/}
+                        {/*                onClick={Command("calc")}>Calculate*/}
+                        {/*        </button>*/}
+                        {/*    </div>*/}
+                        {/*    <div className="invalid-feedback">*/}
+                        {/*        Invalid input*/}
+                        {/*    </div>*/}
+                        {/*    <div className="valid-feedback">*/}
+                        {/*        Your input was sent*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
-                        <div className="input-group mb-3 justify-content-center">
-                            <button className="btn btn-outline-secondary" type="button" onClick={Command("sum")}>Sum A
-                                and
-                                B
-                            </button>
-                            <button className="btn btn-outline-secondary" type="button"
-                                    onClick={Command("multiply")}>Multiply A and B
-                            </button>
-                        </div>
-                        <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                                <span className="input-group-text">Poly A</span>
-                            </div>
-                            <input type="text" className="form-control" placeholder="" id="polyA" aria-label="Poly A"
-                                   readOnly/>
-                        </div>
-                        <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                                <span className="input-group-text">Poly B</span>
-                            </div>
-                            <input type="text" className="form-control" placeholder="" id="polyB" aria-label="Poly B"
-                                   readOnly/>
-                        </div>
-                        <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                                <span className="input-group-text">Result</span>
-                            </div>
-                            <input type="text" className="form-control" placeholder="" id="result" aria-label="Result"
-                                   readOnly/>
-                        </div>
+                        {/*<div className="input-group mb-3 justify-content-center">*/}
+                        {/*    <button className="btn btn-outline-secondary" type="button" onClick={Command("sum")}>Sum A*/}
+                        {/*        and*/}
+                        {/*        B*/}
+                        {/*    </button>*/}
+                        {/*    <button className="btn btn-outline-secondary" type="button"*/}
+                        {/*            onClick={Command("multiply")}>Multiply A and B*/}
+                        {/*    </button>*/}
+                        {/*</div>*/}
+                        {/*<div className="input-group mb-3">*/}
+                        {/*    <div className="input-group-prepend">*/}
+                        {/*        <span className="input-group-text">Poly A</span>*/}
+                        {/*    </div>*/}
+                        {/*    <input type="text" className="form-control" placeholder="" id="polyA" aria-label="Poly A"*/}
+                        {/*           readOnly/>*/}
+                        {/*</div>*/}
+                        {/*<div className="input-group mb-3">*/}
+                        {/*    <div className="input-group-prepend">*/}
+                        {/*        <span className="input-group-text">Poly B</span>*/}
+                        {/*    </div>*/}
+                        {/*    <input type="text" className="form-control" placeholder="" id="polyB" aria-label="Poly B"*/}
+                        {/*           readOnly/>*/}
+                        {/*</div>*/}
+                        {/*<div className="input-group mb-3">*/}
+                        {/*    <div className="input-group-prepend">*/}
+                        {/*        <span className="input-group-text">Result</span>*/}
+                        {/*    </div>*/}
+                        {/*    <input type="text" className="form-control" placeholder="" id="result" aria-label="Result"*/}
+                        {/*           readOnly/>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
 
