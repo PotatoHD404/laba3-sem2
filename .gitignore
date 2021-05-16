@@ -35,4 +35,6 @@ yarn-error.log*
 
 src/cmake-build-*
 
-/venv
+venv
+public/sw.*
+public/workbox*
