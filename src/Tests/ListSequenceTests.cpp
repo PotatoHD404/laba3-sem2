@@ -6,7 +6,7 @@
 #define TEST_DB_LISTSEQUENCETESTS_H
 
 #include "gtest/gtest.h"
-#include "../ListSequence.h"
+#include "../ListSequence.hpp"
 
 TEST(ListSequence_int, InitDefault) {
     ListSequence<int> arr = ListSequence<int>();

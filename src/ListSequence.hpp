@@ -4,11 +4,11 @@
 #ifndef LABA2_LISTSEQUENCE_H
 #define LABA2_LISTSEQUENCE_H
 
-#include "Sequence.h"
-#include "LinkedList.h"
+#include "Sequence.hpp"
+#include "LinkedList.hpp"
 #include <iostream>
 #include <cstring>
-#include "Enumerable.h"
+#include "Enumerable.hpp"
 
 using namespace std;
 

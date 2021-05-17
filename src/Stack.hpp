@@ -2,10 +2,10 @@
 // Created by korna on 05.05.2021.
 //
 
-#ifndef LABA3_STACK_H
-#define LABA3_STACK_H
+#ifndef LABA3_STACK_HPP
+#define LABA3_STACK_HPP
 
-#include "ListSequence.h"
+#include "ListSequence.hpp"
 
 template<class T>
 class Stack : ListSequence<T> {
@@ -26,4 +26,4 @@ public:
 
 };
 
-#endif //LABA3_STACK_H
+#endif //LABA3_STACK_HPP

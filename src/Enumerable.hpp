@@ -4,7 +4,7 @@
 #ifndef LABA2_ENUMERABLE_H
 #define LABA2_ENUMERABLE_H
 
-#include "ICollection.h"
+#include "ICollection.hpp"
 #include <vector>
 #include <tuple>
 #include <iostream>

@@ -1,16 +1,16 @@
 //
 // Created by korna on 30.04.2021.
 //
-#ifndef LABA3_NARYTREE_H
-#define LABA3_NARYTREE_H
+#ifndef LABA3_NARYTREE_HPP
+#define LABA3_NARYTREE_HPP
 
 #include <iostream>
 #include <cstring>
 #include <sstream>
 #include <regex>
-#include "ArraySequence.h"
-#include "Stack.h"
-#include "Pair.h"
+#include "ArraySequence.hpp"
+#include "Stack.hpp"
+#include "Pair.hpp"
 
 using namespace std;
 
@@ -376,4 +376,4 @@ public:
     }
 };
 
-#endif //LABA3_NARYTREE_H
+#endif //LABA3_NARYTREE_HPP

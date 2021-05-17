@@ -4,7 +4,7 @@
 #ifndef LABA2_SEQUENCE_H
 #define LABA2_SEQUENCE_H
 
-#include "Enumerable.h"
+#include "Enumerable.hpp"
 #include <iostream>
 #include <memory>
 

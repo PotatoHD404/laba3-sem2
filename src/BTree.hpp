@@ -2,10 +2,10 @@
 // Created by korna on 08.05.2021.
 //
 
-#ifndef LABA3_BTREE_H
-#define LABA3_BTREE_H
+#ifndef LABA3_BTREE_HPP
+#define LABA3_BTREE_HPP
 
-#include "NAryTree.h"
+#include "NAryTree.hpp"
 
 template<typename T>
 class BTree : public NAryTree<T> {
@@ -315,4 +315,4 @@ public:
 };
 
 
-#endif //LABA3_BTREE_H
+#endif //LABA3_BTREE_HPP

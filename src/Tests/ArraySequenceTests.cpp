@@ -6,7 +6,7 @@
 #define TEST_DB_ARRAYSEQUENCETESTS_H
 
 #include "gtest/gtest.h"
-#include "../ArraySequence.h"
+#include "../ArraySequence.hpp"
 
 TEST(ArraySequence_int, InitDefault) {
     ArraySequence<int> arr = ArraySequence<int>();

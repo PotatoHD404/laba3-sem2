@@ -6,7 +6,7 @@
 #define TEST_DB_LINKEDLISTTESTS_H
 
 #include "gtest/gtest.h"
-#include "../LinkedList.h"
+#include "../LinkedList.hpp"
 
 TEST(LinkedList, InitDefault) {
     LinkedList<int> arr = LinkedList<int>();

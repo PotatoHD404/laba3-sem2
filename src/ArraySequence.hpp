@@ -4,8 +4,8 @@
 #ifndef LABA2_ARRAYSEQUENCE_H
 #define LABA2_ARRAYSEQUENCE_H
 
-#include "Sequence.h"
-#include "DynamicArray.h"
+#include "Sequence.hpp"
+#include "DynamicArray.hpp"
 #include <iostream>
 #include <cstring>
 

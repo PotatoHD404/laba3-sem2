@@ -7,8 +7,8 @@
 
 #include "gtest/gtest.h"
 #include <iostream>
-#include "../ListSequence.h"
-#include "../ArraySequence.h"
+#include "../ListSequence.hpp"
+#include "../ArraySequence.hpp"
 
 using namespace std;
 

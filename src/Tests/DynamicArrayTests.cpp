@@ -6,7 +6,7 @@
 #define TEST_DB_DYNAMICARRAYTESTS_H
 
 #include "gtest/gtest.h"
-#include "../DynamicArray.h"
+#include "../DynamicArray.hpp"
 
 TEST(DynamicArray, InitDefault_Set_Resize) {
     DynamicArray<int> arr = DynamicArray<int>();

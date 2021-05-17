@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 #include <iostream>
-#include "../Complex.h"
+#include "../Complex.hpp"
 
 using namespace std;
 

@@ -5,8 +5,8 @@
 #ifndef LABA3_SET_H
 #define LABA3_SET_H
 
-#include "BTree.h"
-#include "Sequence.h"
+#include "BTree.hpp"
+#include "Sequence.hpp"
 
 //template<typename T>
 //class Set : public Sequence<T> {

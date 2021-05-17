@@ -3,10 +3,10 @@
 //#pragma GCC optimize("unroll-loops")
 
 #include <iostream>
-#include "Complex.h"
-#include "NAryTree.h"
-#include "Person.h"
-#include "BTree.h"
+#include "Complex.hpp"
+#include "NAryTree.hpp"
+#include "Person.hpp"
+#include "BTree.hpp"
 //#include "Set.h"
 #include <regex>
 #include <chrono>

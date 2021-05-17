@@ -5,9 +5,9 @@
 
 #include "gtest/gtest.h"
 #include <iostream>
-#include "../Enumerable.h"
-#include "../ListSequence.h"
-#include "../ArraySequence.h"
+#include "../Enumerable.hpp"
+#include "../ListSequence.hpp"
+#include "../ArraySequence.hpp"
 
 using namespace std;
 
