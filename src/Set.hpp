@@ -122,27 +122,26 @@ public:
         return res;
     }
 
-    friend ostream &operator<<(ostream &out, const Sequence<T> &x) {
-//        out << TypeName<ChildClass<T>>() << "(";
+    friend ostream &operator<<(ostream &out, const Set<T> &x) {
+        ArraySequence<T> tmp = x.ToArraySequence();
         out << "{";
-        size_t length = x.Count();
+        size_t length = tmp.Count();
         for (size_t i = 0; i < length; ++i) {
-            out << x[i];
+            out << tmp[i];
             if (i != length - 1)
                 out << ", ";
         }
         out << "}" << endl;
-//        out << ")" << endl;
         return out;
     }
 
-    friend istream &operator>>(istream &in, Sequence<T> &x) {
+    friend istream &operator>>(istream &in, Set<T> &x) {
         string tmp;
         getline(in, tmp);
         stringstream ss(tmp);
         T t;
         while (ss >> t) {
-            x.Append(t);
+            x.Add(t);
         }
         return in;
     }
@@ -150,25 +149,22 @@ public:
     bool operator==(const Set<T> &x) const { return !(*this != x); }
 
     bool operator!=(const Set<T> &x) const {
-        if (abs(this->real - x.real) >= numeric_limits<float>::epsilon() ||
-            abs(this->imaginary - x.imaginary) >= numeric_limits<float>::epsilon())
-            return true;
-        else
-            return false;
+        return abs(this->real - x.real) >= numeric_limits<float>::epsilon() ||
+               abs(this->imaginary - x.imaginary) >= numeric_limits<float>::epsilon();
     }
 
     Set<T> &operator+=(const Set<T> &list) {
-        *this = this * +list;
+        *this = *this + list;
         return *this;
     }
 
     Set<T> &operator*=(const Set<T> &list) {
-        *this = this * *list;
+        *this = *this * *list;
         return *this;
     }
 
     Set<T> &operator-=(const Set<T> &list) {
-        *this = this * -list;
+        *this = *this - list;
         return *this;
     }
 

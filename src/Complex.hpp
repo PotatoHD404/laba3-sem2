@@ -104,11 +104,8 @@ public:
     bool operator==(const Complex &x) const { return !(*this != x); }
 
     bool operator!=(const Complex &x) const {
-        if (abs(this->real - x.real) >= numeric_limits<float>::epsilon() ||
-            abs(this->imaginary - x.imaginary) >= numeric_limits<float>::epsilon())
-            return true;
-        else
-            return false;
+        return abs(this->real - x.real) >= numeric_limits<float>::epsilon() ||
+               abs(this->imaginary - x.imaginary) >= numeric_limits<float>::epsilon();
     }
 
     bool operator!=(float x) const {
