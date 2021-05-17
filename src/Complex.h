@@ -6,6 +6,7 @@
 #define TEST_DB_COMPLEX_H
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -125,26 +126,40 @@ public:
             return false;
     }
 
-    bool operator<=(float num) const {
-        return !(*this > num);
+    [[nodiscard]] float Norm() const {
+        return std::sqrt(real * real + imaginary * imaginary);
     }
 
-    bool operator<(float num) const {
-        return *this <= num && *this != Complex(num, 0.0);
+    bool operator<=(const Complex &num) const {
+        return this->Norm() <= num.Norm();
     }
 
-    bool operator>=(float num) const {
-        return *this > num || *this == Complex(num, 0.0);
+    bool operator<(const Complex &num) const {
+        return this->Norm() < num.Norm();
     }
 
-    bool operator<(float &num) const {
-        if (this->real < num)
-            return true;
-        else
-            return false;
+    bool operator>=(const Complex &num) const {
+        return this->Norm() >= num.Norm();
     }
 
+    bool operator>(const Complex &num) const {
+        return this->Norm() > num.Norm();
+    }
 
+    [[nodiscard]] float sgn() const {
+        if (this->imaginary < 0) { return -1; }
+        else if (this->imaginary == 0) { return 0; }
+        else { return -1; }
+    }
 };
+
+namespace std {
+    Complex sqrt(Complex &complex) {
+        float re = sqrt((complex.real + complex.Norm()) / 2);
+        float imag = complex.sgn() * sqrt((complex.Norm() - complex.real) / 2);
+
+        return Complex(re, imag);
+    }
+}
 
 #endif //TEST_DB_COMPLEX_H

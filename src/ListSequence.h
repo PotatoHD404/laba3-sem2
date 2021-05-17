@@ -24,6 +24,8 @@ public:
         items = LinkedList<T>();
     }
 
+    explicit ListSequence(int count) : ListSequence((size_t) count) {
+    }
 
     explicit ListSequence(size_t count) {
         items = LinkedList<T>(count);
@@ -71,11 +73,11 @@ public:
     }
 
     ListSequence<T> *Subsequence(size_t startIndex, size_t endIndex) {
-        if (startIndex < 0 || startIndex >= items.GetLength())
+        if (startIndex < 0 || startIndex >= items.Count())
             throw range_error("index < 0 or index >= length");
         if (startIndex > endIndex)
             throw range_error("startIndex > endIndex");
-        if (endIndex >= items.GetLength())
+        if (endIndex >= items.Count())
             throw range_error("endIndex >= length");
         ListSequence<T> *res = new ListSequence<T>();
         res->items = items.GetSubList(startIndex, endIndex);
@@ -83,7 +85,7 @@ public:
     }
 
     size_t Count() {
-        return items.GetLength();
+        return items.Count();
     }
 
     T &operator[](size_t index) {
@@ -92,7 +94,7 @@ public:
 
     bool operator==(ListSequence<T> list) {
         size_t len = list.Count();
-        if (len != this->items.GetLength())
+        if (len != this->items.Count())
             return false;
         for (size_t i = 0; i < len; ++i)
             if (this->At(i) != list.At(i))
@@ -103,7 +105,7 @@ public:
 
     //Operations
     void Clear() {
-        while (items.GetLength()) items.PopFirst();
+        while (items.Count()) items.PopFirst();
     }
 
     ListSequence<T> *Clone() const {
@@ -156,14 +158,14 @@ public:
     }
 
     T RemoveAt(size_t index) {
-        if (index < 0 || index >= items.GetLength())
+        if (index < 0 || index >= items.Count())
             throw range_error("index < 0 or index >= length");
         return items.RemoveAt(index);
     }
 
     ListSequence<T> *Concat(Sequence<T> &list) {
         ListSequence<T> *res = new ListSequence<T>();
-        for (size_t i = 0; i < items.GetLength(); ++i) {
+        for (size_t i = 0; i < items.Count(); ++i) {
             res->Append(items.At(i));
         }
         for (size_t i = 0; i < list.Count(); ++i) {

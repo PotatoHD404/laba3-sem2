@@ -145,7 +145,7 @@ private:
             return res;
         }
 
-        void InsertNonFull(T k, size_t t) {
+        bool InsertNonFull(T k, size_t t) {
             size_t i = FindKey(k);
             if (this->IsLeaf()) {
                 if (i < this->keys.Count()) {
@@ -158,7 +158,7 @@ private:
                     if (this->keys[i] < k)
                         i++;
                 }
-                this->GetChild(i)->InsertNonFull(k, t);
+                return this->GetChild(i)->InsertNonFull(k, t);
             }
         }
 
@@ -248,7 +248,7 @@ private:
 public:
     BTree() : BTree(3) {}
 
-    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t), t(t) {}
+    explicit BTree(size_t t) : NAryTree<T>(new BNode(), 2 * t, 0), t(t) {}
 
     void Insert(T k) {
         if (static_cast<BNode *>(this->root)->keys.Count() == 2 * t - 1) {
@@ -258,11 +258,11 @@ public:
             size_t i = 0;
             if (s->keys[i] < k)
                 i++;
-            s->GetChild(i)->InsertNonFull(k, t);
+            if (s->GetChild(i)->InsertNonFull(k, t))
+                this->count++;
 
             this->root = s;
-        } else
-            static_cast<BNode *>(this->root)->InsertNonFull(k, t);
+        } else if (static_cast<BNode *>(this->root)->InsertNonFull(k, t)) this->count++;
     }
 
     T GetMin() {
@@ -288,7 +288,9 @@ public:
     void Remove(T k) {
 
         // Call the remove function for root
-        static_cast<BNode *>(this->root)->Remove(k, t);
+        if (static_cast<BNode *>(this->root)->Remove(k, t)) {
+            this->count--;
+        }
 
         // If the root node has 0 this->keys, make its first child as the new root
         //  if it has a child, otherwise set root as NULL

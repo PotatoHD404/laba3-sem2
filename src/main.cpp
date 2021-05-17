@@ -84,7 +84,7 @@ int main() {
     for (int i = 0; i < 10; ++i) {
         bTree.Insert(i);
     }
-//    cout << bTree.Order(R"((1)[2]{K}<3>d4b/5\"6')") << endl;
+    cout << bTree.Order(R"((1)[2]{K}<3>d4b/5\"6')") << bTree.Count() << endl;
 //    for (int i = 0; i < iterations; ++i) {
 //        int tmp = intDistro(mt);
 //        auto start = high_resolution_clock::now();

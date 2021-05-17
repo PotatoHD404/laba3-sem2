@@ -55,14 +55,14 @@ public:
 
     //Decomposition
     T &At(size_t index) {
-//        if (index < 0 || index >= length)
-//            throw out_of_range("index < 0 or index >= length");
+        if (index < 0 || index >= length)
+            throw out_of_range("index < 0 or index >= length");
         return actual_array[index];
     }
 
     void Set(size_t index, T value) {
-//        if (index < 0 || index >= length)
-//            throw range_error("index < 0 or index >= length");
+        if (index < 0 || index >= length)
+            throw range_error("index < 0 or index >= length");
         At(index) = value;
     }
 
@@ -82,7 +82,7 @@ public:
 
     size_t Count() { return length; }
 
-    T &operator[](size_t index) { return At(index); }
+    T &operator[](size_t index) { return actual_array[index]; }
 
     //Operations
     void Resize(size_t new_length) {

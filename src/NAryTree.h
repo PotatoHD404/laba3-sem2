@@ -128,8 +128,6 @@ protected:
         }
     };
 
-    size_t n;
-    Node<T> *root;
 
     Node<T> *GetNode(initializer_list<size_t> indexes) {
         Node<T> *res = root;
@@ -158,68 +156,23 @@ protected:
         return res;
     }
 
+    size_t n;
+    Node<T> *root;
+    size_t count;
+
 public:
 
 
-    NAryTree() : NAryTree(new Node<T>(), 0) {}
+    NAryTree() : NAryTree(new Node<T>(), 0, 0) {}
 
-    explicit NAryTree(Node<T> *root) : root(root), n(root->ChildrenCount()) {}
+    explicit NAryTree(Node<T> *root, size_t count) : root(root), n(root->ChildrenCount()), count(count) {}
 
-    NAryTree(NAryTree<T> const &tree) : root(new Node<T>(tree.root)), n(tree.n) {}
+    NAryTree(NAryTree<T> const &tree) : root(new Node<T>(tree.root)), n(tree.n), count(tree.count) {}
 
-    NAryTree(Node<T> *root, size_t n) : n(n), root(root) {}
+    NAryTree(Node<T> *root, size_t n, size_t count) : n(n), root(root), count(count) {}
 
-//    explicit NAryTree(const string &input) : NAryTree() {
-//        // "123 123 + 3232 32 123 - 32"
-//
-//        size_t plusPos = input.find(" + ");
-//        size_t minusPos = input.find(" - ");
-//        size_t currentPos = 0;
-//        size_t length = 0;
-//        string current = input.substr(currentPos,
-//                                      minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
-//                                                                                             ? minusPos : plusPos);
-//
-//        stringstream ss(current);
-//        currentPos = current.find(' ');
-//        T t;
-//        ss >> t;
-//
-//        current = ss.str().substr(currentPos, ss.str().length() - 1);
-//        root = new Node<T>(t);
-//        Node<T> *tmp = root;
-//        while (currentPos < input.length()) {
-//            ss = stringstream(current);
-//            currentPos += current.length();
-//            while (ss >> t) {
-//                tmp->AddChild(new Node<T>(t));
-//                length = tmp->ChildrenCount();
-//            }
-//            if (!(plusPos == minusPos && plusPos == string::npos)) {
-//                if (plusPos <= minusPos) {
-//                    tmp = tmp->GetLastChild();
-//                    currentPos = plusPos + 3;
-//                } else {
-//                    tmp = tmp->parent;
-//                    currentPos = minusPos + 3;
-//                }
-//            }
-//            plusPos = current.find(" + ");
-//            minusPos = current.find(" - ");
-//            current = input.substr(currentPos, minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
-//                                                                                                      ? minusPos
-//                                                                                                      : plusPos);
-//            if (length > n)
-//                n = length;
-//            if (current.length() == 0)
-//                break;
-//
-//        }
-//    }
-
-//{1}({2})[{3}({4})[{7}]] recompile pls)
     NAryTree(const string &str, const string &br) {
-
+        count = 0;
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
         auto words_begin = sregex_iterator(br.begin(), br.end(), word_regex);
         auto words_end = sregex_iterator();
@@ -287,6 +240,7 @@ public:
                     T d;
                     ss >> node->keys[0];
                     while (ss >> d) {
+                        count++;
                         node->keys.Append(d);
                     }
 
@@ -308,32 +262,33 @@ public:
     }
 
 
+//    ArraySequence<T> ToArraySequence() {
+//        if (root == NULL)
+//            throw runtime_error("Root is NULL");
+//        stringstream buffer;
+//        function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
+//            if (br != -1)
+//                buffer << brackets[indexes[br]][0];
+//            for (size_t i = 0; i < length; ++i)
+//                if (indexes[i] == length - 1) {
+//                    buffer << brackets[length - 1][0];
+//                    for (size_t k = 0; k < node->keys.Count(); ++k) {
+//                        buffer << node->keys[k];
+//                        if (k != node->keys.Count() - 1)
+//                            buffer << " ";
+//
+//                    }
+//                    buffer << brackets[length - 1][1];
+//                } else if (indexes[i] < node->ChildrenCount())
+//                    VisitNode(node->children[indexes[i]], i);
+//            if (br != -1)
+//                buffer << brackets[indexes[br]][1];
+//        };
+//        VisitNode(root, -1);
+//        return buffer.str();
+//    }
 
-    ArraySequence<T> ToArraySequence() {
-        if (root == NULL)
-            throw runtime_error("Root is NULL");
-        stringstream buffer;
-        function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
-            if (br != -1)
-                buffer << brackets[indexes[br]][0];
-            for (size_t i = 0; i < length; ++i)
-                if (indexes[i] == length - 1) {
-                    buffer << brackets[length - 1][0];
-                    for (size_t k = 0; k < node->keys.Count(); ++k) {
-                        buffer << node->keys[k];
-                        if (k != node->keys.Count() - 1)
-                            buffer << " ";
-
-                    }
-                    buffer << brackets[length - 1][1];
-                } else if (indexes[i] < node->ChildrenCount())
-                    VisitNode(node->children[indexes[i]], i);
-            if (br != -1)
-                buffer << brackets[indexes[br]][1];
-        };
-        VisitNode(root, -1);
-        return buffer.str();
-    }
+    size_t Count() { return count; }
 
     string Order(const string &str) {
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");

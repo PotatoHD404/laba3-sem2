@@ -164,7 +164,7 @@ public:
 
     ///
     /// \return
-    size_t GetLength() {
+    size_t Count() {
         return length;
     }
 

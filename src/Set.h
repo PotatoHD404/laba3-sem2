@@ -122,17 +122,28 @@ public:
         return res;
     }
 
-    friend ostream &operator<<(ostream &out, const Complex &x) {
-        if (x.imaginary < 0)
-            out << "(" << x.real << x.imaginary << "*i)";
-        else
-            out << "(" << x.real << "+" << x.imaginary << "*i)";
+    friend ostream &operator<<(ostream &out, const Sequence<T> &x) {
+//        out << TypeName<ChildClass<T>>() << "(";
+        out << "{";
+        size_t length = x.Count();
+        for (size_t i = 0; i < length; ++i) {
+            out << x[i];
+            if (i != length - 1)
+                out << ", ";
+        }
+        out << "}" << endl;
+//        out << ")" << endl;
         return out;
     }
 
-    friend istream &operator>>(istream &in, Complex &complex) {
-        in >> complex.real;
-        in >> complex.imaginary;
+    friend istream &operator>>(istream &in, Sequence<T> &x) {
+        string tmp;
+        getline(in, tmp);
+        stringstream ss(tmp);
+        T t;
+        while (ss >> t) {
+            x.Append(t);
+        }
         return in;
     }
 

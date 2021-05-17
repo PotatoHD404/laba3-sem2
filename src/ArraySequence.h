@@ -22,6 +22,9 @@ public:
         items = DynamicArray<T>();
     }
 
+    explicit ArraySequence(int count) : ArraySequence((size_t) count) {
+    }
+
     explicit ArraySequence(size_t count) {
         items = DynamicArray<T>(count);
     }
@@ -157,7 +160,7 @@ public:
     }
 
     T PopFirst() {
-        T res = items[0];
+        T res = items.At(0);
         for (size_t i = 0; i < items.Count() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
@@ -166,15 +169,16 @@ public:
     }
 
     T PopLast() {
-        T res = items[items.Count() - 1];
+        T res = items.At(items.Count() - 1);
         items.Resize(items.Count() - 1);
         return res;
     }
 
     T RemoveAt(size_t index) {
-        T res = items[index];
+
         if (index < 0 || index >= items.Count())
             throw range_error("index < 0 or index >= length");
+        T res = items[index];
         for (size_t i = index; i < items.Count() - 1; ++i) {
             items.Set(i, items[i + 1]);
         }
