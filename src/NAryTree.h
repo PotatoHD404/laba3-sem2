@@ -159,6 +159,8 @@ protected:
     }
 
 public:
+
+
     NAryTree() : NAryTree(new Node<T>(), 0) {}
 
     explicit NAryTree(Node<T> *root) : root(root), n(root->ChildrenCount()) {}
@@ -167,53 +169,53 @@ public:
 
     NAryTree(Node<T> *root, size_t n) : n(n), root(root) {}
 
-    explicit NAryTree(const string &input) : NAryTree() {
-        // "123 123 + 3232 32 123 - 32"
-
-        size_t plusPos = input.find(" + ");
-        size_t minusPos = input.find(" - ");
-        size_t currentPos = 0;
-        size_t length = 0;
-        string current = input.substr(currentPos,
-                                      minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
-                                                                                             ? minusPos : plusPos);
-
-        stringstream ss(current);
-        currentPos = current.find(' ');
-        T t;
-        ss >> t;
-
-        current = ss.str().substr(currentPos, ss.str().length() - 1);
-        root = new Node<T>(t);
-        Node<T> *tmp = root;
-        while (currentPos < input.length()) {
-            ss = stringstream(current);
-            currentPos += current.length();
-            while (ss >> t) {
-                tmp->AddChild(new Node<T>(t));
-                length = tmp->ChildrenCount();
-            }
-            if (!(plusPos == minusPos && plusPos == string::npos)) {
-                if (plusPos <= minusPos) {
-                    tmp = tmp->GetLastChild();
-                    currentPos = plusPos + 3;
-                } else {
-                    tmp = tmp->parent;
-                    currentPos = minusPos + 3;
-                }
-            }
-            plusPos = current.find(" + ");
-            minusPos = current.find(" - ");
-            current = input.substr(currentPos, minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
-                                                                                                      ? minusPos
-                                                                                                      : plusPos);
-            if (length > n)
-                n = length;
-            if (current.length() == 0)
-                break;
-
-        }
-    }
+//    explicit NAryTree(const string &input) : NAryTree() {
+//        // "123 123 + 3232 32 123 - 32"
+//
+//        size_t plusPos = input.find(" + ");
+//        size_t minusPos = input.find(" - ");
+//        size_t currentPos = 0;
+//        size_t length = 0;
+//        string current = input.substr(currentPos,
+//                                      minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
+//                                                                                             ? minusPos : plusPos);
+//
+//        stringstream ss(current);
+//        currentPos = current.find(' ');
+//        T t;
+//        ss >> t;
+//
+//        current = ss.str().substr(currentPos, ss.str().length() - 1);
+//        root = new Node<T>(t);
+//        Node<T> *tmp = root;
+//        while (currentPos < input.length()) {
+//            ss = stringstream(current);
+//            currentPos += current.length();
+//            while (ss >> t) {
+//                tmp->AddChild(new Node<T>(t));
+//                length = tmp->ChildrenCount();
+//            }
+//            if (!(plusPos == minusPos && plusPos == string::npos)) {
+//                if (plusPos <= minusPos) {
+//                    tmp = tmp->GetLastChild();
+//                    currentPos = plusPos + 3;
+//                } else {
+//                    tmp = tmp->parent;
+//                    currentPos = minusPos + 3;
+//                }
+//            }
+//            plusPos = current.find(" + ");
+//            minusPos = current.find(" - ");
+//            current = input.substr(currentPos, minusPos == plusPos == string::npos ? input.length() : minusPos < plusPos
+//                                                                                                      ? minusPos
+//                                                                                                      : plusPos);
+//            if (length > n)
+//                n = length;
+//            if (current.length() == 0)
+//                break;
+//
+//        }
+//    }
 
 //{1}({2})[{3}({4})[{7}]] recompile pls)
     NAryTree(const string &str, const string &br) {
@@ -296,8 +298,41 @@ public:
         }
         if (!bracketSequence.IsEmpty())
             throw std::runtime_error("Wrong input");
+    }
+
+    NAryTree<T> &operator=(const NAryTree<T> &list) {
+        this->~NAryTree();
+        n = list.n;
+        root = new Node<T>(*list.root);
+        return *this;
+    }
 
 
+
+    ArraySequence<T> ToArraySequence() {
+        if (root == NULL)
+            throw runtime_error("Root is NULL");
+        stringstream buffer;
+        function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
+            if (br != -1)
+                buffer << brackets[indexes[br]][0];
+            for (size_t i = 0; i < length; ++i)
+                if (indexes[i] == length - 1) {
+                    buffer << brackets[length - 1][0];
+                    for (size_t k = 0; k < node->keys.Count(); ++k) {
+                        buffer << node->keys[k];
+                        if (k != node->keys.Count() - 1)
+                            buffer << " ";
+
+                    }
+                    buffer << brackets[length - 1][1];
+                } else if (indexes[i] < node->ChildrenCount())
+                    VisitNode(node->children[indexes[i]], i);
+            if (br != -1)
+                buffer << brackets[indexes[br]][1];
+        };
+        VisitNode(root, -1);
+        return buffer.str();
     }
 
     string Order(const string &str) {
@@ -329,12 +364,12 @@ public:
             brackets[num][1] = match_str[match_str.size() - 1];
             ++j;
         }
-        if (length >= n) {
-            indexes[0] = n;
-            brackets[n][0] = brackets[--length][0];
-            brackets[n][1] = brackets[length][1];
-            length = n + 1;
-        }
+//        if (length >= n) {
+//            indexes[length - 1] = n;
+//            brackets[n][0] = brackets[--length][0];
+//            brackets[n][1] = brackets[length][1];
+//            length = n + 1;
+//        }
 //        if (length != n + 1)
 //            throw runtime_error("wrong indexes: N != n + 1");
         if (root == NULL)
@@ -347,9 +382,9 @@ public:
                 if (indexes[i] == length - 1) {
                     buffer << brackets[length - 1][0];
                     for (size_t k = 0; k < node->keys.Count(); ++k) {
-                            buffer << node->keys[k];
-                            if (k != node->keys.Count() - 1)
-                                buffer << " ";
+                        buffer << node->keys[k];
+                        if (k != node->keys.Count() - 1)
+                            buffer << " ";
 
                     }
                     buffer << brackets[length - 1][1];

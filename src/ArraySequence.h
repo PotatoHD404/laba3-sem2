@@ -8,7 +8,6 @@
 #include "DynamicArray.h"
 #include <iostream>
 #include <cstring>
-#include "IEnumerator.h"
 
 using namespace std;
 
@@ -26,8 +25,6 @@ public:
     explicit ArraySequence(size_t count) {
         items = DynamicArray<T>(count);
     }
-
-    explicit ArraySequence(int count) : ArraySequence((size_t) count) {}
 
     ArraySequence(T *items, size_t count) {
         this->items = DynamicArray<T>(items, count);
@@ -159,10 +156,6 @@ public:
         return res;
     }
 
-    IEnumerator<T> *GetEnumerator() {
-        return new typename IEnumerable<T>::Enumerator(this);
-    }
-
     T PopFirst() {
         T res = items[0];
         for (size_t i = 0; i < items.Count() - 1; ++i) {
@@ -192,6 +185,7 @@ public:
     T &operator[](size_t index) {
         return items[index];
     }
+
 
     template<typename T1>
     ArraySequence<T1> Map(T1 (*mapper)(T)) {

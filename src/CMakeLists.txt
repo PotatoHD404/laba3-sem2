@@ -14,6 +14,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     set(CMAKE_C_COMPILER "emcc")
 endif ()
 
+#if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+#    add_subdirectory(Tests)
+#endif ()
+
 add_executable(Laba3 main.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")

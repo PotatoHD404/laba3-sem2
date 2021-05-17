@@ -72,7 +72,7 @@ const Page = () => {
     return (<>
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <title>Main</title>
+                <title>PotatoHD</title>
             </Head>
             <div className="container-fluid">
                 <div className="row mt-5 justify-content-center">

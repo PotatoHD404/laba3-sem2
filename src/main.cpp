@@ -7,9 +7,9 @@
 #include "NAryTree.h"
 #include "Person.h"
 #include "BTree.h"
+//#include "Set.h"
 #include <regex>
 #include <chrono>
-#include <ctime>
 #include <random>
 
 using namespace std;
@@ -70,33 +70,37 @@ int main() {
 //    string order = tree.Order("{K}(1)[2]");
 //    cout << order << endl;
 //    NAryTree<int> res(order, "{K}(1)[2]");
-    int iterations = 1000;
-#ifdef __EMSCRIPTEN__
-    readline();
-    stringstream ss(readline());
-    ss >> iterations;
-#endif
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    uniform_int_distribution<int> intDistro(0, iterations * 10);
+//    Set<int> set = Set<int>();
+//    int iterations = 1000;
+//#ifdef __EMSCRIPTEN__
+//    readline();
+//    stringstream ss(readline());
+//    ss >> iterations;
+//#endif
+//    std::random_device rd;
+//    std::mt19937 mt(rd());
+//    uniform_int_distribution<int> intDistro(0, iterations * 10);
     BTree<int> bTree(3);
-
-    for (int i = 0; i < iterations; ++i) {
-        int tmp = intDistro(mt);
-        auto start = high_resolution_clock::now();
-        bTree.Insert(tmp);
-        auto stop = high_resolution_clock::now();
-        if (i % 10000 == 0) {
-            cout << "time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000
-                 << " microseconds";
-            start = high_resolution_clock::now();
-            bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')");
-            stop = high_resolution_clock::now();
-            cout << " order time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000000
-                 << " milliseconds"
-                 << " iteration #" << i << endl;
-        }
+    for (int i = 0; i < 10; ++i) {
+        bTree.Insert(i);
     }
+//    cout << bTree.Order(R"((1)[2]{K}<3>d4b/5\"6')") << endl;
+//    for (int i = 0; i < iterations; ++i) {
+//        int tmp = intDistro(mt);
+//        auto start = high_resolution_clock::now();
+//        bTree.Insert(tmp);
+//        auto stop = high_resolution_clock::now();
+//        if (i % 10000 == 0) {
+//            cout << "time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000
+//                 << " microseconds";
+//            start = high_resolution_clock::now();
+//            bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')");
+//            stop = high_resolution_clock::now();
+//            cout << " order time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000000
+//                 << " milliseconds"
+//                 << " iteration #" << i << endl;
+//        }
+//    }
 //    bTree.Remove(8);
 //    bTree.Remove(17);
 //    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;

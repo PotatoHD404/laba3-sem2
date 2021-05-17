@@ -25,8 +25,6 @@ public:
         imaginary = ob.imaginary;
     };
 
-    Complex &operator=(const Complex &x) = default;
-
     Complex &operator*=(const Complex &x) {
         this->real = real * x.real - imaginary * x.imaginary;
         this->imaginary = real * x.imaginary + x.real * imaginary;

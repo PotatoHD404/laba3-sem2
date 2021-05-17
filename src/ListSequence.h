@@ -8,7 +8,6 @@
 #include "LinkedList.h"
 #include <iostream>
 #include <cstring>
-#include "IEnumerator.h"
 #include "Enumerable.h"
 
 using namespace std;
@@ -25,7 +24,6 @@ public:
         items = LinkedList<T>();
     }
 
-    explicit ListSequence(int count) : ListSequence((size_t) count) {}
 
     explicit ListSequence(size_t count) {
         items = LinkedList<T>(count);
@@ -122,10 +120,6 @@ public:
         return new ListSequence<T1>(count);
     }
 
-    IEnumerator<T> *GetEnumerator() {
-        return new typename IEnumerable<T>::Enumerator(this);
-    }
-
     template<typename T1>
     ListSequence<T1> Map(T1 (*mapper)(T)) {
         ListSequence<T1> *res = dynamic_cast<ListSequence<T1> *>(Enumerable<T>::template Map<T1, ListSequence>(mapper));
@@ -187,5 +181,6 @@ public:
         return *this;
     }
 };
+
 
 #endif //LABA2_LISTSEQUENCE_H

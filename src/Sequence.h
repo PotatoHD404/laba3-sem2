@@ -12,6 +12,23 @@ using namespace std;
 
 template<typename T>
 class Sequence : public Enumerable<T> {
+private:
+//    template<typename T1>
+//    static string TypeName() {
+//        typedef typename remove_reference<T1>::type TR;
+//        unique_ptr<char, void (*)(void *)> own(nullptr, free);
+//        std::string r = own != nullptr ? own.get() : typeid(TR).name();
+//        if (std::is_const<TR>::value)
+//            r += " const";
+//        if (std::is_volatile<TR>::value)
+//            r += " volatile";
+//        if (std::is_lvalue_reference<T>::value)
+//            r += "&";
+//        else if (std::is_rvalue_reference<T>::value)
+//            r += "&&";
+//        return r;
+//    }
+
 public:
     Sequence() = default;
 
@@ -26,9 +43,32 @@ public:
 
     virtual T &At(size_t index) = 0;
 
-//    virtual size_t Count() = 0;
-
     virtual T &operator[](size_t index) = 0;
+
+    friend ostream &operator<<(ostream &out, const Sequence<T> &x) {
+//        out << TypeName<ChildClass<T>>() << "(";
+        out << "[";
+        size_t length = x.Count();
+        for (size_t i = 0; i < length; ++i) {
+            out << x[i];
+            if (i != length - 1)
+                out << ", ";
+        }
+        out << "]" << endl;
+//        out << ")" << endl;
+        return out;
+    }
+
+    friend istream &operator>>(istream &in, Sequence<T> &x) {
+        string tmp;
+        getline(in, tmp);
+        stringstream ss(tmp);
+        T t;
+        while (ss >> t) {
+            x.Append(t);
+        }
+        return in;
+    }
 
     //Operations
     virtual void Append(T item) = 0;

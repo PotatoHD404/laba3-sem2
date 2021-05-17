@@ -265,6 +265,26 @@ public:
             static_cast<BNode *>(this->root)->InsertNonFull(k, t);
     }
 
+    T GetMin() {
+        BNode *tmp = static_cast<BNode *>(this->root);
+        while (!tmp->IsLeaf())
+            tmp = tmp->children.GetFirst();
+        return tmp->data.GetFirst();
+    }
+
+    T GetMax() {
+        BNode *tmp = static_cast<BNode *>(this->root);
+        while (!tmp->IsLeaf())
+            tmp = tmp->children.GetLast();
+        return tmp->data.GetLast();
+    }
+
+    T Pop() {
+        T res = GetMin();
+        Remove(res);
+        return res;
+    }
+
     void Remove(T k) {
 
         // Call the remove function for root

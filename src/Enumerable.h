@@ -4,7 +4,6 @@
 #ifndef LABA2_ENUMERABLE_H
 #define LABA2_ENUMERABLE_H
 
-#include "IEnumerable.h"
 #include "ICollection.h"
 #include <vector>
 #include <tuple>
@@ -15,7 +14,7 @@ using namespace std;
 
 template<typename T>
 /*abstract*/
-class Enumerable : public IEnumerable<T>, public ICollection<T> {
+class Enumerable : public ICollection<T> {
 private:
     template<typename Base, typename T1>
     inline constexpr static bool instanceof(const T1 *) {
