@@ -75,9 +75,9 @@ public:
             throw range_error("endIndex >= length");
         size_t len = endIndex - startIndex + 1;
 
-        T arr[len];
-        memcpy(arr, this->actual_array + startIndex, len * sizeof(T));
-        return DynamicArray(arr, len);
+        DynamicArray<T> res(len);
+        memcpy(res.actual_array, this->actual_array + startIndex, len * sizeof(T));
+        return res;
     }
 
     size_t Count() { return length; }

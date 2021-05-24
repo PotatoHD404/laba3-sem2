@@ -12,4 +12,3 @@ add_executable(Tests
         BTreeTests.cpp
         SetTests.cpp)
 target_link_libraries(Tests gtest gtest_main)
-

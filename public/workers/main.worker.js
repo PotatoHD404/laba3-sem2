@@ -25,6 +25,4 @@ self.onmessage = async (e) => {
     } else {
         cin(e.data);
     }
-    // self.postMessage("cringe", null);
-    // cin(e.data);
 }

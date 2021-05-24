@@ -62,23 +62,23 @@ public:
 
     //Operations
     void Clear() {
-        items = Set<T>();
+        items = BTree<T>();
     }
 
-    template<typename T1>
-    Set<T1> Map(T1 (*mapper)(T)) {
-        Set<T1> *res;
-        auto res1 = Set<T1>(res);
-        delete res;
-        return res1;
-    }
-
-    T Reduce(T (*func)(T, T)) {
-        Set<T> *res = dynamic_cast<Set<T1> *>(Enumerable<T>::template Map<T1, Set>(mapper));
-        auto res1 = Set<T1>(res);
-        delete res;
-        return res1;
-    }
+//    template<typename T1>
+//    Set<T1> Map(T1 (*mapper)(T)) {
+////        BTree<T1> *res;
+////        auto res1 = BTree<T1>(res);
+////        delete res;
+////        return res1;
+//    }
+//
+//    T Reduce(T (*func)(T, T)) {
+//        Set<T> *res = dynamic_cast<Set<T1> *>(Enumerable<T>::template Map<T1, Set>(mapper));
+//        auto res1 = Set<T1>(res);
+//        delete res;
+//        return res1;
+//    }
 
     T Pop() {
         return items.Pop();
@@ -89,18 +89,49 @@ public:
     }
 
 
-    Set<T> Union(Set<T> const &list1, Set<T> const &list2) {
-        Set<T> *res = new Set<T>();
+    Set<T> Union(Set<T> const &list) {
+        Set<T> res = Set<T>();
+        Set<T> res1 = Set<T>(list);
         for (size_t i = 0; i < items.GetLength(); ++i) {
-            res->Append(items.At(i));
+            res.Add(items.At(i));
         }
         for (size_t i = 0; i < list.Count(); ++i) {
-            res->Append(list[i]);
+            res.Add(list[i]);
         }
         return res;
     }
 
     Set<T> Intersection(Set<T> const &list) {
+//        stringstream buffer;
+//        Stack<Pair<BNode *, size_t>> stack;
+//        stack.Push(Pair(static_cast<BNode *>(this->root), (size_t) 0));
+//        size_t length = this->count;
+//        while (!stack.IsEmpty()) {
+//
+//            if (!stack.Top().first->IsLeaf()) {
+//                if (stack.Top().first->ChildrenCount() == stack.Top().second)
+//                    stack.Pop();
+//                else {
+//
+//                    if (stack.Top().second != 0) {
+//                        buffer << stack.Top().first->keys[stack.Top().second - 1];
+//                        length--;
+//                    }
+//                    if (length != this->count && length)
+//                        buffer << " ";
+//                    stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
+//                }
+//            } else {
+//                size_t len = stack.Top().first->keys.Count();
+//                length -= len;
+//                for (size_t i = 0; i < len; ++i) {
+//                    buffer << stack.Top().first->keys[i];
+//                    if (i != len - 1)
+//                        buffer << " ";
+//                }
+//                stack.Pop();
+//            }
+//        }
         Set<T> *res = new Set<T>();
         for (size_t i = 0; i < items.GetLength(); ++i) {
             res->Append(items.At(i));

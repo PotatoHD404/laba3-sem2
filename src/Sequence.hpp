@@ -45,7 +45,7 @@ public:
 
     virtual T &operator[](size_t index) = 0;
 
-    friend ostream &operator<<(ostream &out, const Sequence<T> &x) {
+    friend ostream &operator<<(ostream &out, Sequence<T> &&x) {
 //        out << TypeName<ChildClass<T>>() << "(";
         out << "[";
         size_t length = x.Count();
@@ -58,7 +58,7 @@ public:
 //        out << ")" << endl;
         return out;
     }
-
+//    friend ostream &operator<<(ostream &out,const Sequence<T> &x){return operator<<(out, &x); }
     friend istream &operator>>(istream &in, Sequence<T> &x) {
         string tmp;
         getline(in, tmp);

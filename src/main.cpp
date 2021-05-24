@@ -7,7 +7,7 @@
 #include "NAryTree.hpp"
 #include "Person.hpp"
 #include "BTree.hpp"
-//#include "Set.h"
+#include "Set.hpp"
 #include <regex>
 #include <chrono>
 #include <random>
@@ -65,6 +65,25 @@ string readline() {
 //    return 0;
 //}
 
+//template<typename T>
+//class HasMore {
+//private:
+//    typedef int YesType;
+//    typedef long NoType;
+//
+//    template<typename T1>
+//    static YesType test(decltype(T1::operator>)) { return 0; }
+//
+//    template<typename T1>
+//    static NoType test(...) { return 0; }
+//
+//public:
+//    enum {
+//        value = sizeof(test<T>(0)) == sizeof(YesType)
+//    };
+//};
+
+
 int main() {
 //    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
 //    string order = tree.Order("{K}(1)[2]");
@@ -80,11 +99,13 @@ int main() {
 //    std::random_device rd;
 //    std::mt19937 mt(rd());
 //    uniform_int_distribution<int> intDistro(0, iterations * 10);
-    BTree<int> bTree(3);
-    for (int i = 0; i < 10; ++i) {
+    BTree<int> bTree(2);
+    for (int i = 0; i < 20; ++i) {
         bTree.Insert(i);
     }
-    cout << bTree.Order(R"((1)[2]{K}<3>d4b/5\"6')") << bTree.Count() << endl;
+//    bTree.Insert(5);
+////    bTree.Pop();
+//    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl << bTree.Count() << endl;
 //    for (int i = 0; i < iterations; ++i) {
 //        int tmp = intDistro(mt);
 //        auto start = high_resolution_clock::now();
@@ -103,7 +124,9 @@ int main() {
 //    }
 //    bTree.Remove(8);
 //    bTree.Remove(17);
-//    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl;
+    cout << bTree.Order("{K}(2)[1]<3>d4b\\5/") << endl;
+    cout << bTree.AscendingOrder() << endl;
+    cout << bTree.ToArraySequence() << endl;
 //    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)
@@ -114,6 +137,11 @@ int main() {
 //        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
 //    bTree.Remove(8);
 //    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+//    int *a = new int(5);
+//    int *b = new int(6);
+//    cout << HasMore<int>::value << endl;
+//    delete a;
+//    delete b;
     return 0;
 }
 

@@ -101,6 +101,8 @@ public:
         return in;
     }
 
+    Complex& operator=(const Complex&) = default;
+
     bool operator==(const Complex &x) const { return !(*this != x); }
 
     bool operator!=(const Complex &x) const {

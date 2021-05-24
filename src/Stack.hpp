@@ -20,9 +20,14 @@ public:
         return this->PopFirst();
     }
 
+    T& Top() {
+        return this->GetFirst();
+    }
+
     bool IsEmpty() {
         return this->Count() == 0;
     }
+
 
 };
 

@@ -16,13 +16,15 @@ class LinkedList {
 private:
     class Node;
 
-    size_t length;
+
     Node *head, *tail;
+    size_t length;
 
     class Node {
     public:
-        T data;
         Node *next;
+        T data;
+
 
         Node() : Node(T(), NULL) {}
 

@@ -21,6 +21,7 @@ protected:
     class Node {
     public:
         ArraySequence<T1> keys;
+        ArraySequence<T1> values;
         ArraySequence<Node<T1> *> children;
         Node<T1> *parent;
 
@@ -30,8 +31,7 @@ protected:
 
         explicit Node(Node<T1> *input) : Node() {
             Node<T1> *res = new Node();
-            Stack<Node<T1> *> s;
-            Stack<Node<T1> *> s1;
+            Stack<Node<T1> *> s, s1;
             s.Push(input);
             s1.Push(this);
             while (!s.IsEmpty()) {
@@ -48,7 +48,7 @@ protected:
         }
 
         template<class T2>
-        explicit Node(Node<T2> *input, T1 (*mapper)(T2)) {
+        Node(Node<T2> *input, T1 (*mapper)(T2)) {
             Stack<Node<T2> *> s;
             Stack<Node<T1> *> s1;
             s.Push(input);
@@ -179,8 +179,8 @@ public:
         const size_t length = distance(words_begin, words_end);
         n = length - 1;
         string check;
-        char brackets[length][2];
-        size_t indexes[length];
+        string brackets;
+        size_t *indexes = new size_t[length]();
         int j = 0;
         for (sregex_iterator i = words_begin; i != words_end; ++i) {
             smatch match = *i;
@@ -196,20 +196,17 @@ public:
             if (num >= length)
                 throw runtime_error("wrong input");
             indexes[j] = num;
-            if (check.find(match_str[0]) != string::npos || check.find(match_str[match_str.size() - 1]) != string::npos)
-                throw runtime_error("wrong input(brackets)");
-            brackets[num][0] = match_str[0];
-            brackets[num][1] = match_str[match_str.size() - 1];
-            check += string(1, brackets[num][0]) + string(1, brackets[num][1]);
+            brackets[num * 2] = match_str[0];
+            brackets[num * 2 + 1] = match_str[match_str.size() - 1];
             ++j;
         }
         check = "";
         string openBr;
         string closeBr;
-        string rootBr = string(1, brackets[n][0]) + string(1, brackets[n][1]);
+        string rootBr = string(1, brackets[2 * n]) + string(1, brackets[2 * n + 1]);
         for (int i = 0; i < n; ++i) {
-            openBr += string(1, brackets[i][0]);
-            closeBr += string(1, brackets[i][1]);
+            openBr += string(1, brackets[2 * i]);
+            closeBr += string(1, brackets[2 * i + 1]);
         }
         size_t len = str.length();
 
@@ -250,6 +247,7 @@ public:
                 }
             }
         }
+        delete[] indexes;
         if (!bracketSequence.IsEmpty())
             throw std::runtime_error("Wrong input");
     }
@@ -261,33 +259,6 @@ public:
         return *this;
     }
 
-
-//    ArraySequence<T> ToArraySequence() {
-//        if (root == NULL)
-//            throw runtime_error("Root is NULL");
-//        stringstream buffer;
-//        function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
-//            if (br != -1)
-//                buffer << brackets[indexes[br]][0];
-//            for (size_t i = 0; i < length; ++i)
-//                if (indexes[i] == length - 1) {
-//                    buffer << brackets[length - 1][0];
-//                    for (size_t k = 0; k < node->keys.Count(); ++k) {
-//                        buffer << node->keys[k];
-//                        if (k != node->keys.Count() - 1)
-//                            buffer << " ";
-//
-//                    }
-//                    buffer << brackets[length - 1][1];
-//                } else if (indexes[i] < node->ChildrenCount())
-//                    VisitNode(node->children[indexes[i]], i);
-//            if (br != -1)
-//                buffer << brackets[indexes[br]][1];
-//        };
-//        VisitNode(root, -1);
-//        return buffer.str();
-//    }
-
     size_t Count() { return count; }
 
     string Order(const string &str) {
@@ -298,8 +269,8 @@ public:
         if (!regex_search(str, regex(R"(^(([^\dK])((\d)+|(K))([^\dK]))+$)")))
             throw runtime_error("wrong input");
 //        cout << length << endl;
-        char brackets[length][2];
-        size_t indexes[length];
+        string brackets;
+        size_t *indexes = new size_t[length]();
         int j = 0;
         for (sregex_iterator i = words_begin; i != words_end; ++i) {
             smatch match = *i;
@@ -315,8 +286,8 @@ public:
             if (num >= length)
                 throw runtime_error("wrong input");
             indexes[j] = num;
-            brackets[num][0] = match_str[0];
-            brackets[num][1] = match_str[match_str.size() - 1];
+            brackets[num * 2] = match_str[0];
+            brackets[num * 2 + 1] = match_str[match_str.size() - 1];
             ++j;
         }
 //        if (length >= n) {
@@ -332,23 +303,23 @@ public:
         stringstream buffer;
         function<void(Node<T> *, long long)> VisitNode = [&](Node<T> *node, long long br) {
             if (br != -1)
-                buffer << brackets[indexes[br]][0];
+                buffer << brackets[indexes[br] * 2];
             for (size_t i = 0; i < length; ++i)
                 if (indexes[i] == length - 1) {
-                    buffer << brackets[length - 1][0];
+                    buffer << brackets[2 * length - 2];
                     for (size_t k = 0; k < node->keys.Count(); ++k) {
                         buffer << node->keys[k];
                         if (k != node->keys.Count() - 1)
                             buffer << " ";
-
                     }
-                    buffer << brackets[length - 1][1];
+                    buffer << brackets[2 * length - 1];
                 } else if (indexes[i] < node->ChildrenCount())
                     VisitNode(node->children[indexes[i]], i);
             if (br != -1)
-                buffer << brackets[indexes[br]][1];
+                buffer << brackets[indexes[br] * 2 + 1];
         };
         VisitNode(root, -1);
+        delete[] indexes;
         return buffer.str();
     }
 
