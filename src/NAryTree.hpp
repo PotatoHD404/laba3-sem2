@@ -30,7 +30,7 @@ protected:
         Node(Node<T1> const &node) : Node(&node) {}
 
         explicit Node(Node<T1> *input) : Node() {
-            Node<T1> *res = new Node();
+//            Node<T1> *res = new Node();
             Stack<Node<T1> *> s, s1;
             s.Push(input);
             s1.Push(this);
@@ -38,7 +38,7 @@ protected:
                 Node<T1> *node = s.Pop();
                 Node<T1> *tmp = s1.Pop();
                 tmp->keys = node->keys;
-                for (int i = 0; i < node->ChildrenCount(); ++i)
+                for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
                         s.Push(node->children[i]);
@@ -165,9 +165,9 @@ public:
 
     NAryTree() : NAryTree(new Node<T>(), 0, 0) {}
 
-    explicit NAryTree(Node<T> *root, size_t count) : root(root), n(root->ChildrenCount()), count(count) {}
+    explicit NAryTree(Node<T> *root, size_t count) : n(root->ChildrenCount()), root(root), count(count) {}
 
-    NAryTree(NAryTree<T> const &tree) : root(new Node<T>(tree.root)), n(tree.n), count(tree.count) {}
+    NAryTree(NAryTree<T> &tree) : n(tree.n), root(new Node<T>(tree.root)), count(tree.count) {}
 
     NAryTree(Node<T> *root, size_t n, size_t count) : n(n), root(root), count(count) {}
 

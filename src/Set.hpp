@@ -34,7 +34,7 @@ public:
             this->Add(item);
     }
 
-    Set(Set<T> const &list) : items(list.items) {}
+    Set(Set<T> &list) : items(list.items) {}
 
     explicit Set(const Set<T> *list) : Set(*list) {}
 
@@ -84,77 +84,57 @@ public:
         return items.Pop();
     }
 
+    void Add(T item) {
+        items.Insert(item);
+    }
+
     void Remove(T item) {
-        items.Remove(item);
+        return items.Remove(item);
     }
 
+    Set<T> Union(Set<T> &list) {
+        Set<T> res = Set<T>(*this);
+        ArraySequence<T> arr = list.items.ToArraySequence();
+        for (size_t i = 0; i < arr.Count(); ++i) {
+            res.Add(arr[i]);
+        }
+        return res;
+    }
 
-    Set<T> Union(Set<T> const &list) {
+    Set<T> Intersection(Set<T> &list) {
         Set<T> res = Set<T>();
-        Set<T> res1 = Set<T>(list);
-        for (size_t i = 0; i < items.GetLength(); ++i) {
-            res.Add(items.At(i));
-        }
-        for (size_t i = 0; i < list.Count(); ++i) {
-            res.Add(list[i]);
-        }
-        return res;
-    }
-
-    Set<T> Intersection(Set<T> const &list) {
-//        stringstream buffer;
-//        Stack<Pair<BNode *, size_t>> stack;
-//        stack.Push(Pair(static_cast<BNode *>(this->root), (size_t) 0));
-//        size_t length = this->count;
-//        while (!stack.IsEmpty()) {
-//
-//            if (!stack.Top().first->IsLeaf()) {
-//                if (stack.Top().first->ChildrenCount() == stack.Top().second)
-//                    stack.Pop();
-//                else {
-//
-//                    if (stack.Top().second != 0) {
-//                        buffer << stack.Top().first->keys[stack.Top().second - 1];
-//                        length--;
-//                    }
-//                    if (length != this->count && length)
-//                        buffer << " ";
-//                    stack.Push(Pair(stack.Top().first->GetChild(stack.Top().second++), (size_t) 0));
-//                }
-//            } else {
-//                size_t len = stack.Top().first->keys.Count();
-//                length -= len;
-//                for (size_t i = 0; i < len; ++i) {
-//                    buffer << stack.Top().first->keys[i];
-//                    if (i != len - 1)
-//                        buffer << " ";
-//                }
-//                stack.Pop();
-//            }
-//        }
-        Set<T> *res = new Set<T>();
-        for (size_t i = 0; i < items.GetLength(); ++i) {
-            res->Append(items.At(i));
-        }
-        for (size_t i = 0; i < list.Count(); ++i) {
-            res->Append(list[i]);
+        ArraySequence<T> arr1 = items.ToArraySequence();
+        ArraySequence<T> arr2 = list.items.ToArraySequence();
+        size_t i = 0, j = 0;
+        while (true) {
+            if (arr1[i] == arr2[j]) {
+                res.Add(arr1[i]);
+                i++;
+                j++;
+            } else if (arr1[i] < arr2[j]) {
+                if (i == arr1.Count() - 1)
+                    break;
+                i++;
+            } else if (arr1[i] > arr2[j]) {
+                if (j == arr2.Count() - 1)
+                    break;
+                j++;
+            }
         }
         return res;
     }
 
-    Set<T> Difference(Set<T> const &list) {
-        Set<T> *res = new Set<T>();
-        for (size_t i = 0; i < items.GetLength(); ++i) {
-            res->Append(items.At(i));
-        }
-        for (size_t i = 0; i < list.Count(); ++i) {
-            res->Append(list[i]);
+    Set<T> Difference(Set<T> &list) {
+        Set<T> res = Set<T>(*this);
+        ArraySequence<T> arr = list.items.ToArraySequence();
+        for (size_t i = 0; i < arr.Count(); ++i) {
+            res.Remove(arr[i]);
         }
         return res;
     }
 
-    friend ostream &operator<<(ostream &out, const Set<T> &x) {
-        ArraySequence<T> tmp = x.ToArraySequence();
+    friend ostream &operator<<(ostream &out, Set<T> &x) {
+        ArraySequence<T> tmp = x.items.ToArraySequence();
         out << "{";
         size_t length = tmp.Count();
         for (size_t i = 0; i < length; ++i) {
@@ -162,9 +142,11 @@ public:
             if (i != length - 1)
                 out << ", ";
         }
-        out << "}" << endl;
+        out << "}";
         return out;
     }
+
+    friend ostream &operator<<(ostream &out, Set<T> &&x){return operator<<(out, x);}
 
     friend istream &operator>>(istream &in, Set<T> &x) {
         string tmp;
@@ -199,19 +181,16 @@ public:
         return *this;
     }
 
-    Set<T> operator+(const Set<T> &list) {
-        items = LinkedList<T>(list.items);
-        return *this;
+    Set<T> operator+(Set<T> &list) {
+        return Union(list);
     }
 
-    Set<T> operator*(const Set<T> &list) {
-        items = LinkedList<T>(list.items);
-        return *this;
+    Set<T> operator*(Set<T> &list) {
+        return Intersection(list);
     }
 
-    Set<T> operator-(const Set<T> &list) {
-        items = LinkedList<T>(list.items);
-        return *this;
+    Set<T> operator-(Set<T> &list) {
+        return Difference(list);
     }
 };
 

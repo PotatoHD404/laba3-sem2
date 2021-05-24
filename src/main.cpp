@@ -99,10 +99,15 @@ int main() {
 //    std::random_device rd;
 //    std::mt19937 mt(rd());
 //    uniform_int_distribution<int> intDistro(0, iterations * 10);
-    BTree<int> bTree(2);
+    Set<int> set1, set2;
     for (int i = 0; i < 20; ++i) {
-        bTree.Insert(i);
+        set1.Add(i);
     }
+    for (int i = 10; i < 40; ++i) {
+        set2.Add(i);
+    }
+    cout << set1 << " " << set2 << endl;
+    cout << set1 + set2 << endl;
 //    bTree.Insert(5);
 ////    bTree.Pop();
 //    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl << bTree.Count() << endl;
@@ -124,9 +129,9 @@ int main() {
 //    }
 //    bTree.Remove(8);
 //    bTree.Remove(17);
-    cout << bTree.Order("{K}(2)[1]<3>d4b\\5/") << endl;
-    cout << bTree.AscendingOrder() << endl;
-    cout << bTree.ToArraySequence() << endl;
+//    cout << bTree.Order("{K}(2)[1]<3>d4b\\5/") << endl;
+//    cout << bTree.AscendingOrder() << endl;
+//    cout << bTree.ToArraySequence() << endl;
 //    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
 //    for (int i = 0; i < 19; ++i) {
 //        if(i == 9)

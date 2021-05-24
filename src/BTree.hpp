@@ -185,7 +185,7 @@ private:
 
                 // If this node is a leaf node, then the key is not present in tree
                 if (this->IsLeaf()) {
-                    cout << "The key " << k << " is does not exist in the tree\n";
+//                    cout << "The key " << k << " is does not exist in the tree\n";
                     return false;
                 }
 
@@ -377,7 +377,7 @@ public:
         }
 
         // If the root node has 0 this->keys, make its first child as the new root
-        //  if it has a child, otherwise set root as NULL
+        //  if it has a child, otherwise BTree root as NULL
         if (this->root->keys.Count() == 0) {
             BNode *tmp = static_cast<BNode *>(this->root);
             if (!static_cast<BNode *>(this->root)->IsLeaf())
@@ -393,8 +393,7 @@ public:
         return static_cast<BNode *>(this->root)->Search(key) != nullptr;
     }
 
-    BTree(BTree<T> const &tree) : NAryTree<T>(static_cast<NAryTree<T> *>(&tree)), t(tree.t) {}
-
+    BTree(BTree<T> &tree) : NAryTree<T>(static_cast<NAryTree<T> &>(tree)), t(tree.t) {}
 
 };
 
