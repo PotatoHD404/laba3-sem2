@@ -19,5 +19,17 @@ int Sum(int x, int y) {
     return x + y;
 }
 
+int x2(int x) {
+    return x * 2;
+}
+
+int subtract2(int x) {
+    return x - 2;
+}
+
+string ToString(int x){
+    return to_string(x);
+}
+
 
 #endif //LABA3_FUNCTIONS_H

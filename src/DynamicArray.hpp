@@ -48,7 +48,9 @@ public:
         length = dynamicArray.length;
         if (length > 0) {
             actual_array = new T[length]();
-            memcpy(actual_array, dynamicArray.actual_array, length * sizeof(T));
+            for (size_t i = 0; i < length; ++i) {
+                actual_array[i] = dynamicArray.actual_array[i];
+            }
         } else
             actual_array = new T[1]();
     }
@@ -76,7 +78,10 @@ public:
         size_t len = endIndex - startIndex + 1;
 
         DynamicArray<T> res(len);
-        memcpy(res.actual_array, this->actual_array + startIndex, len * sizeof(T));
+        for (size_t i = startIndex; i < len; ++i) {
+            res.actual_array[i] = actual_array[i];
+        }
+//        memcpy(res.actual_array, this->actual_array + startIndex, len * sizeof(T));
         return res;
     }
 
@@ -94,7 +99,9 @@ public:
         if (new_length > 0) {
             new_array = new T[new_length]();
             size_t len = new_length > length ? length : new_length;
-            memmove(new_array, actual_array, sizeof(T) * len);
+            for (size_t i = 0; i < len; ++i) {
+                new_array[i] = actual_array[i];
+            }
         } else new_array = new T[1]();
         delete[] actual_array;
         length = new_length;
@@ -106,7 +113,9 @@ public:
         length = list.length;
         if (length > 0) {
             actual_array = new T[length]();
-            memcpy(actual_array, list.actual_array, length * sizeof(T));
+            for (size_t i = 0; i < length; ++i) {
+                actual_array[i] = list.actual_array[i];
+            }
         } else
             actual_array = new T[1]();
         return *this;

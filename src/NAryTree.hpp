@@ -27,7 +27,7 @@ protected:
 
         Node() : keys(), children(ArraySequence<Node<T1> *>()), parent(nullptr) {}
 
-        Node(Node<T1> const &node) : Node(&node) {}
+        Node(Node<T1> &node) : Node(&node) {}
 
         explicit Node(Node<T1> *input) : Node() {
 //            Node<T1> *res = new Node();
@@ -48,22 +48,24 @@ protected:
         }
 
         template<class T2>
-        Node(Node<T2> *input, T1 (*mapper)(T2)) {
-            Stack<Node<T2> *> s;
-            Stack<Node<T1> *> s1;
-            s.Push(input);
-            s1.Push(this);
+        Node<T2> *Map(T2 (*mapper)(T1)) {
+            Stack<Node<T1> *> s;
+            Stack<Node<T2> *> s1;
+            Node<T2> *res = new Node<T2>();
+            s.Push(this);
+            s1.Push(res);
             while (!s.IsEmpty()) {
-                Node<T2> *node = s.Pop();
-                Node<T1> *tmp = s1.Pop();
+                Node<T1> *node = s.Pop();
+                Node<T2> *tmp = s1.Pop();
                 tmp->keys = node->keys.Map(mapper);
-                for (int i = 0; i < node->ChildrenCount(); ++i)
+                for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL) {
                         tmp->AddChild();
                         s.Push(node->children[i]);
                         s1.Push(tmp->children[i]);
                     }
             }
+            return res;
         }
 
         explicit Node(T1 data) : Node(data, nullptr, ArraySequence<Node<T1> *>()) {}
@@ -156,14 +158,15 @@ protected:
         return res;
     }
 
+
     size_t n;
     Node<T> *root;
     size_t count;
 
 public:
+    NAryTree() : NAryTree(2) {}
 
-
-    NAryTree() : NAryTree(new Node<T>(), 0, 0) {}
+    NAryTree(size_t n) : NAryTree(new Node<T>(), n, 0) {}
 
     explicit NAryTree(Node<T> *root, size_t count) : n(root->ChildrenCount()), root(root), count(count) {}
 
@@ -252,9 +255,20 @@ public:
             throw std::runtime_error("Wrong input");
     }
 
-    NAryTree<T> &operator=(const NAryTree<T> &list) {
+    void Insert(size_t at, initializer_list<size_t> indexes, T k) {
+        GetNode(indexes)->keys.InsertAt(at, k);
+    }
+
+    void Remove(size_t at, initializer_list<size_t> indexes) {
+        GetNode(indexes)->keys.RemoveAt(at);
+    }
+
+    size_t GetN() { return n; }
+
+    NAryTree<T> &operator=(NAryTree<T> &&list) {
         this->~NAryTree();
         n = list.n;
+        count = list.count;
         root = new Node<T>(*list.root);
         return *this;
     }
@@ -335,7 +349,7 @@ public:
 
     template<typename T1>
     NAryTree<T1> Map(T1 (*mapper)(T)) {
-        return NAryTree<T1>(new Node(root, mapper));
+        return NAryTree<T1>(root->Map(mapper), n);
     }
 
     T Reduce(T (*f)(T), T const &c) {

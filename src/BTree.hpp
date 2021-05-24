@@ -275,6 +275,25 @@ public:
         return res;
     }
 
+    BTree<T> &operator=(BTree<T> &&list) noexcept {
+        this->~BTree();
+        this->n = list.n;
+        this->count = list.count;
+        t = list.t;
+        this->root = new BNode(*static_cast<BNode *>(list.root));
+        return *this;
+    }
+
+//    BTree<T> &operator=(NAryTree<T> &&list) {
+//        this->~BTree();
+//
+//        this->n = list.GetN();
+//        count = list.Count();
+//        t = list.t;
+//        this->root = new BNode(*list.root);
+//        return *this;
+//    }
+
     string AscendingOrder() {
         if (this->root == NULL)
             throw runtime_error("Root is NULL");

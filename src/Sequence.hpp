@@ -54,7 +54,7 @@ public:
             if (i != length - 1)
                 out << ", ";
         }
-        out << "]" << endl;
+        out << "]";
 //        out << ")" << endl;
         return out;
     }

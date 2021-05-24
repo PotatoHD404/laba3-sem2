@@ -8,15 +8,6 @@
 #include "BTree.hpp"
 #include "Sequence.hpp"
 
-//template<typename T>
-//class Set : public Sequence<T> {
-//private:
-//    
-//public:
-//    Set() {}
-//
-//};
-
 template<typename T>
 class Set {
 private:
@@ -65,20 +56,21 @@ public:
         items = BTree<T>();
     }
 
-//    template<typename T1>
-//    Set<T1> Map(T1 (*mapper)(T)) {
-////        BTree<T1> *res;
-////        auto res1 = BTree<T1>(res);
-////        delete res;
-////        return res1;
-//    }
-//
-//    T Reduce(T (*func)(T, T)) {
-//        Set<T> *res = dynamic_cast<Set<T1> *>(Enumerable<T>::template Map<T1, Set>(mapper));
-//        auto res1 = Set<T1>(res);
-//        delete res;
-//        return res1;
-//    }
+    template<typename T1>
+    Set<T1> Map(T1 (*mapper)(T)) {
+        Set<T1> res;
+        static_cast<NAryTree<T> &>(res.items) = items.Map(mapper);
+        ArraySequence<T> x = res.items.ToArraySequence();
+        res.items = BTree<T>();
+        for (size_t i = 0; i < x.Count(); ++i)
+            res.Add(x[i]);
+
+        return res;
+    }
+
+    T Reduce(T (*func)(T, T)) {
+        return items.Reduce(func);
+    }
 
     T Pop() {
         return items.Pop();
@@ -146,7 +138,11 @@ public:
         return out;
     }
 
-    friend ostream &operator<<(ostream &out, Set<T> &&x){return operator<<(out, x);}
+    ArraySequence<T> ToArraySequence() {
+        return items.ToArraySequence();
+    }
+
+    friend ostream &operator<<(ostream &out, Set<T> &&x) { return operator<<(out, x); }
 
     friend istream &operator>>(istream &in, Set<T> &x) {
         string tmp;
@@ -159,11 +155,10 @@ public:
         return in;
     }
 
-    bool operator==(const Set<T> &x) const { return !(*this != x); }
+    bool operator==(const Set<T> &x) const { return x.items == this->items; }
 
     bool operator!=(const Set<T> &x) const {
-        return abs(this->real - x.real) >= numeric_limits<float>::epsilon() ||
-               abs(this->imaginary - x.imaginary) >= numeric_limits<float>::epsilon();
+        return x.items != this->items;
     }
 
     Set<T> &operator+=(const Set<T> &list) {
