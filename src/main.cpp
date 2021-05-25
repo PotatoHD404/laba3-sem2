@@ -174,7 +174,7 @@ void StartUI() {
     int res = 1;
     string tmp;
     Set<T> set1, set2;
-    Set<T> *set = nullptr;
+    Set<T> *set;
     while (res != 0) {
         try {
             res = Dialog(MSGS);
@@ -368,8 +368,7 @@ void StartUI_func() {
         }
     }
 }
-
-int main() {
+void MainStartUI(){
     int res = 1;
     cout << "Enter data type:" << endl;
     res = Dialog(MSGS1);
@@ -402,6 +401,10 @@ int main() {
             break;
         }
     }
+}
+
+int main() {
+    MainStartUI();
     return 0;
 }
 
@@ -482,6 +485,6 @@ int main() {
 
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(Laba3) {
-        emscripten::function("start", &main, emscripten::allow_raw_pointers());
+        emscripten::function("start", &MainStartUI, emscripten::allow_raw_pointers());
 }
 #endif
