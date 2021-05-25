@@ -151,7 +151,7 @@ const Page = () => {
             document.getElementById("setA").value = data.split("Result Set A: ")[1];
         else if (data.includes("Result Set B: {"))
             document.getElementById("setB").value = data.split("Result Set B: ")[1];
-        else if (data.includes("Result: {"))
+        else if (data.includes("Result: "))
             document.getElementById("result").value = data.split("Result: ")[1];
         else if(data.includes("Set does not contain the value"))
             document.getElementById("result").value = "Set does not contain the value";

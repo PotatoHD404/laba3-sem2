@@ -255,7 +255,7 @@ void StartUI() {
                         set = &set2;
                     else
                         break;
-                    cout << set->ToArraySequence() << endl;
+                    cout << "Result: " << set->ToArraySequence() << endl;
                     break;
                 case 5:
                     res = Dialog(MSGS4);
@@ -265,7 +265,7 @@ void StartUI() {
                         set = &set2;
                     else
                         break;
-                    cout << set->AsTree() << endl;
+                    cout << "Result: " << set->AsTree() << endl;
                     break;
                 case 6:
                     res = Dialog(MSGS4);
