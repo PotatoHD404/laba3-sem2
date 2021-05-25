@@ -62,9 +62,9 @@ const Page = () => {
                         case 'complex':
                             mess = '4';
                             break;
-                        case 'functions':
-                            mess = '5';
-                            break;
+                        // case 'functions':
+                        //     mess = '5';
+                        //     break;
                         case 'people':
                             mess = '6';
                             break;
@@ -201,7 +201,7 @@ const Page = () => {
                                 <option value="double">double</option>
                                 <option value="float">float</option>
                                 <option value="complex">complex</option>
-                                <option value="functions">functions</option>
+                                {/*<option value="functions">functions</option>*/}
                                 <option value="people">people</option>
                                 <option value="strings">strings</option>
                             </select>

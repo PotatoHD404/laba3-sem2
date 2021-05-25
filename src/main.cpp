@@ -224,8 +224,8 @@ void StartUI() {
                 }
 
                 case 2: {
-                    value = InputValue<T>();
                     res = Dialog(MSGS4);
+                    value = InputValue<T>();
                     if (res == 1)
                         set = &set1;
                     else if (res == 2)
@@ -268,8 +268,8 @@ void StartUI() {
                     cout << set->AsTree() << endl;
                     break;
                 case 6:
-                    value = InputValue<T>();
                     res = Dialog(MSGS4);
+                    value = InputValue<T>();
                     if (res == 1)
                         set = &set1;
                     else if (res == 2)
@@ -447,13 +447,15 @@ void MainStartUI() {
 
 int main() {
 //    while (true)
-//    MainStartUI();
-    Set<int> a;
-    a.Add(2);
-    a.Remove(2);
+    MainStartUI();
+//    Set<int> a;
+//    a.Add(1);
+//    a.Remove(1);
 //    a.Add(2);
-//    a.Add(5);
-    cout << a << endl;
+//    a.Remove(2);
+////    a.Add(2);
+////    a.Add(5);
+//    cout << a << endl;
     return 0;
 }
 
