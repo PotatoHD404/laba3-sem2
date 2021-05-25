@@ -96,6 +96,16 @@ public:
         return res;
     }
 
+    bool operator==(ArraySequence<T> &&list) {
+        size_t len = list.Count();
+        if (len != this->items.Count())
+            return false;
+        for (size_t i = 0; i < len; ++i)
+            if (this->At(i) != list.At(i))
+                return false;
+
+        return true;
+    }
     bool operator==(ArraySequence<T> &list) {
         size_t len = list.Count();
         if (len != this->items.Count())
@@ -106,7 +116,6 @@ public:
 
         return true;
     }
-
 
     //Operations
     template<typename T1>

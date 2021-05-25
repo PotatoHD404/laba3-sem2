@@ -44,11 +44,7 @@ public:
     }
 
     size_t Count() {
-        return items.GetLength();
-    }
-
-    bool operator==(Set<T> const &list) {
-        return list.items == items;
+        return items.Count();
     }
 
     //Operations
@@ -68,8 +64,8 @@ public:
         return res;
     }
 
-    T Reduce(T (*func)(T, T)) {
-        return items.Reduce(func);
+    T Reduce(T (*func)(T, T), T x) {
+        return items.Reduce(func, x);
     }
 
     T Pop() {
@@ -162,8 +158,16 @@ public:
         }
         return in;
     }
+//    bool operator==(Set<T> &x) { return x.items == this->items; }
+//    bool operator==(Set<T> &&x) { return x.items == this->items; }
 
-    bool operator==(const Set<T> &x) const { return x.items == this->items; }
+    bool operator==(Set<T> &list) {
+        return list.items.ToArraySequence() == items.ToArraySequence();
+    }
+
+    bool operator==(Set<T> &&list) {
+        return list.items.ToArraySequence() == items.ToArraySequence();
+    }
 
     bool operator!=(const Set<T> &x) const {
         return x.items != this->items;

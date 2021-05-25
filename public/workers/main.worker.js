@@ -1,8 +1,5 @@
 import Laba3 from "/scripts/Laba3.js";
 
-// import Laba3WASM from './../../scripts/Laba3.wasm';
-// import { messageTypes } from './main.js' // this is the cause
-
 function cin(input) {
     if (self.instance?.promiseResolve !== undefined) {
         let tmp = self.instance.promiseResolve;
@@ -22,8 +19,6 @@ self.onmessage = async (e) => {
             },
         });
         self.instance.start();
-        // while (!await self.instance.start())
-        //     cin("Restarting program...\n\n\n");
     } else {
         cin(e.data);
     }

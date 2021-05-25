@@ -8,6 +8,5 @@ add_executable(Tests
         SequenceTests.cpp
         EnumerableTests.cpp
         ComplexTests.cpp
-        BTreeTests.cpp
         SetTests.cpp)
 target_link_libraries(Tests gtest gtest_main)

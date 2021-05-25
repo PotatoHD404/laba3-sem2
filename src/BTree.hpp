@@ -28,8 +28,12 @@ private:
 
         }
 
-        void RemoveFromLeaf(size_t idx) {
-            this->keys.RemoveAt(idx);
+        bool RemoveFromLeaf(size_t idx) {
+            if (idx < this->keys.Count()) {
+                this->keys.RemoveAt(idx);
+                return true;
+            }
+            return false;
         }
 
         bool RemoveFromNonLeaf(size_t idx, size_t _t) {
@@ -177,8 +181,7 @@ private:
                 // If the node is a leaf node - removeFromLeaf is called
                 // Otherwise, removeFromNonLeaf function is called
                 if (this->IsLeaf()) {
-                    RemoveFromLeaf(idx);
-                    return true;
+                    return RemoveFromLeaf(idx);
                 } else
                     return RemoveFromNonLeaf(idx, _t);
             } else {
@@ -283,6 +286,10 @@ public:
         this->root = new BNode(*static_cast<BNode *>(list.root));
         return *this;
     }
+
+//    bool operator==(BTree<T>& list) noexcept {
+//        return *list.root == *this->root;
+//    }
 
 //    BTree<T> &operator=(NAryTree<T> &&list) {
 //        this->~BTree();
@@ -397,9 +404,9 @@ public:
 
         // If the root node has 0 this->keys, make its first child as the new root
         //  if it has a child, otherwise BTree root as NULL
-        if (this->root->keys.Count() == 0) {
+        if (this->root->keys.Count() == 0 && !static_cast<BNode *>(this->root)->IsLeaf()) {
             BNode *tmp = static_cast<BNode *>(this->root);
-            if (!static_cast<BNode *>(this->root)->IsLeaf())
+//            if (!static_cast<BNode *>(this->root)->IsLeaf())
                 this->root = this->root->children[0];
 
             // Free the old root

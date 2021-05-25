@@ -21,10 +21,11 @@
 using namespace std;
 using namespace std::chrono;
 
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/bind.h>
-
+string str;
 EM_JS(const char *, do_fetch, (), {
 return Asyncify.handleAsync(async () => {
         let promise = new Promise(function(resolve, reject){
@@ -37,12 +38,32 @@ return Asyncify.handleAsync(async () => {
         stringToUTF8(res, stringOnWasmHeap, lengthBytes);
         return stringOnWasmHeap;
 });
+str = "";
 });
 
+
 string readline(){
-    const char * input = do_fetch();
-    string res = input;
-    delete[] input;
+    string res;
+    if(str == ""){
+        const char * input = do_fetch();
+        str = input;
+        delete[] input;
+    }
+                    string delimiter = "\n";
+        if((str.find(delimiter)) != std::string::npos && str.find(delimiter) != 0){
+
+
+        res = str.substr(0, str.find(delimiter));
+            str = str.substr(str.find(delimiter) + 1,str.length()-1);
+        }
+        else if(str.find(delimiter) == 0)
+            {
+            str = str.substr(str.find(delimiter) + 3,str.length()-1);
+            return readline();
+            }
+        else {res = str;
+            str = "";}
+
     return res;
 }
 #else
@@ -388,48 +409,51 @@ void StartUI_func() {
 }
 
 void MainStartUI() {
-    int res = 1;
-    cout << "Enter data type:" << endl;
-    res = Dialog(MSGS1);
-    switch (res) {
-        case 0:
-            break;
-        case 1:
-            StartUI<int>();
-            break;
-        case 2:
-            StartUI<double>();
-            break;
-        case 3:
-            StartUI<float>();
-            break;
-        case 4:
-            StartUI<Complex>();
-            break;
-        case 5:
-            StartUI_func();
-            break;
-        case 6:
-            StartUI<Person>();
-            break;
-        case 7:
-            StartUI<std::string>();
-            break;
-        default: {
-            cout << "How did you end up here?\n";
-            break;
+    while (true) {
+        int res = 1;
+        cout << "Enter data type:" << endl;
+        res = Dialog(MSGS1);
+        switch (res) {
+            case 0:
+                break;
+            case 1:
+                StartUI<int>();
+                break;
+            case 2:
+                StartUI<double>();
+                break;
+            case 3:
+                StartUI<float>();
+                break;
+            case 4:
+                StartUI<Complex>();
+                break;
+            case 5:
+                StartUI_func();
+                break;
+            case 6:
+                StartUI<Person>();
+                break;
+            case 7:
+                StartUI<std::string>();
+                break;
+            default: {
+                cout << "How did you end up here?\n";
+                break;
+            }
         }
     }
 }
 
 int main() {
 //    while (true)
-//        MainStartUI();
+//    MainStartUI();
     Set<int> a;
-    a.Add(4);
     a.Add(2);
-    a.Add(5);
-    cout << a.AsTree() << endl;
+    a.Remove(2);
+//    a.Add(2);
+//    a.Add(5);
+    cout << a << endl;
     return 0;
 }
 

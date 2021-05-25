@@ -92,11 +92,12 @@ protected:
             while (!s.IsEmpty()) {
                 Node<T> *node = s.Pop();
                 res = node->keys.Reduce(f, res);
-                for (int i = 0; i < node->ChildrenCount(); ++i)
+                for (size_t i = 0; i < node->ChildrenCount(); ++i)
                     if (node->children[i] != NULL)
                         s.Push(node->children[i]);
 
             }
+            return res;
         }
 
 
@@ -356,7 +357,7 @@ public:
         return NAryTree<T1>(root->Map(mapper), n);
     }
 
-    T Reduce(T (*f)(T), T const &c) {
+    T Reduce(T (*f)(T, T), T const &c) {
         return root->Reduce(f, c);
     }
 
