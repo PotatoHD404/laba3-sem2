@@ -30,23 +30,23 @@ public:
     string firstName;
     string middleName;
     string lastName;
-    time_t birthDate;
+    string birthDate;
     bool isTeacher;
 
-    Person() : Person(PersonID(), "", "", "", time_t(), false) {}
+    Person() : Person(PersonID(), "", "", "", "", false) {}
 
     Person(const Person &x) : Person(x.id, x.firstName, x.middleName, x.lastName, x.birthDate, x.isTeacher) {}
 
     Person(const PersonID &id, string firstName, string middleName, string lastName,
-           const time_t &birthDate, const bool &isTeacher) :
+           string birthDate, const bool &isTeacher) :
             id(id),
             firstName(std::move(firstName)),
             middleName(std::move(middleName)),
             lastName(std::move(lastName)),
-            birthDate(birthDate),
+            birthDate(std::move(birthDate)),
             isTeacher(isTeacher) {}
 
-    string GetFullName() { return firstName + " " + middleName + " " + lastName; }
+    [[nodiscard]] string GetFullName() const { return firstName + " " + middleName + " " + lastName; }
 
     friend ostream &operator<<(ostream &out, Person &x) {
         out << x.GetFullName();
@@ -56,22 +56,21 @@ public:
     friend istream &operator>>(istream &in, Person &x) {
         unsigned short series;
         unsigned int number;
-        in >> series;
-        in >> number;
+        cout << "Input person like this:\n";
+        cout << "series number firstName middleName lastName birthDate isTeacher\n";
+        cout << "0982 123243 Алексей Щербаков Владимирович 11.13.20 0\n";
+        if (!(in >> series) || !(in >> number) || !(in >> x.firstName) || !(in >> x.middleName) ||
+            !(in >> x.lastName) || !(in >> x.birthDate) || !(in >> x.isTeacher))
+            throw runtime_error("Wrong input");
         x.id = PersonID(series, number);
-        in >> x.firstName;
-        in >> x.middleName;
-        in >> x.lastName;
-        in >> x.birthDate;
-        in >> x.isTeacher;
         return in;
     }
 
-    bool operator>(Person &list) {
+    bool operator>(Person &list) const {
         return GetFullName() > list.GetFullName();
     }
 
-    bool operator<(Person &list) {
+    bool operator<(Person &list) const {
         return GetFullName() < list.GetFullName();
     }
 
@@ -86,8 +85,9 @@ public:
 
     bool operator!=(Person const &list) const { return !(*this == list); }
 
-    Person& operator=(const Person&) = default;
-    Person& operator=(Person&&) = default;
+    Person &operator=(const Person &) = default;
+
+    Person &operator=(Person &&) = default;
 
 
 };

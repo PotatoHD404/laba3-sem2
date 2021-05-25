@@ -137,6 +137,8 @@ public:
     }
 
     void InsertAt(size_t index, T item) {
+        if(index == 0)
+            return Prepend(item);
         items.Resize(items.Count() + 1);
 
         for (size_t i = items.Count() - 1; i > index; --i) {

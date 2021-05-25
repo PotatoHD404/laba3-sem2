@@ -97,6 +97,10 @@ public:
         return res;
     }
 
+    string AsTree() {
+        return items.Order();
+    }
+
     Set<T> Intersection(Set<T> &list) {
         Set<T> res = Set<T>();
         ArraySequence<T> arr1 = items.ToArraySequence();

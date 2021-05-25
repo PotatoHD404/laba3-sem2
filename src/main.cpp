@@ -8,10 +8,16 @@
 #include "Person.hpp"
 #include "BTree.hpp"
 #include "Set.hpp"
-#include <regex>
 #include <chrono>
 #include <random>
 
+
+//#ifdef __EMSCRIPTEN__
+//#else
+//#pragma clang diagnostic push
+//#pragma ide diagnostic ignored "EndlessLoop"
+//#endif
+//
 using namespace std;
 using namespace std::chrono;
 
@@ -99,13 +105,14 @@ using namespace std;
 
 const char *MSGS[] = {"0. Quit",
                       "1. Add value to set",
-                      "2. Remove value to set",
+                      "2. Remove value from set",
                       "3. Print set",
                       "4. Convert set to ArraySequence and print",
-                      "5. Check if set contains value",
-                      "6. Calculate union of sets",
-                      "7. Calculate intersection of sets",
-                      "8. Calculate difference of sets"};
+                      "5. Print set as tree",
+                      "6. Check if set contains value",
+                      "7. Calculate union of sets",
+                      "8. Calculate intersection of sets",
+                      "9. Calculate difference of sets"};
 
 const char *MSGS1[] = {"0. Quit",
                        "1. Int",
@@ -130,8 +137,8 @@ const char *MSGS3[] = {"0. Quit",
                        "6. Apply func"};
 
 const char *MSGS4[] = {"0. Quit",
-                       "1. First set",
-                       "2. Second set"};
+                       "1. Set A",
+                       "2. Set B"};
 
 template<int N>
 int Dialog(const char *(&msgs)[N]) {
@@ -216,7 +223,8 @@ void StartUI() {
                         set = &set2;
                     else
                         break;
-                    cout << *set << endl;
+
+                    cout << "Result Set " << ((res == 1) ? "A" : "B") << ": " << *set << endl;
                     break;
                 case 4:
                     res = Dialog(MSGS4);
@@ -229,6 +237,16 @@ void StartUI() {
                     cout << set->ToArraySequence() << endl;
                     break;
                 case 5:
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    cout << set->AsTree() << endl;
+                    break;
+                case 6:
                     value = InputValue<T>();
                     res = Dialog(MSGS4);
                     if (res == 1)
@@ -242,14 +260,14 @@ void StartUI() {
                     else
                         cout << "Set does not contain the value\n";
                     break;
-                case 6:
-                    cout << set1 + set2 << endl;
-                    break;
                 case 7:
-                    cout << set1 * set2 << endl;
+                    cout << "Result: " << set1 + set2 << endl;
                     break;
                 case 8:
-                    cout << set1 - set2 << endl;
+                    cout << "Result: " << set1 * set2 << endl;
+                    break;
+                case 9:
+                    cout << "Result: " << set1 - set2 << endl;
                     break;
                 default: {
                     cout << "How did you end up here?\n";
@@ -368,7 +386,8 @@ void StartUI_func() {
         }
     }
 }
-void MainStartUI(){
+
+void MainStartUI() {
     int res = 1;
     cout << "Enter data type:" << endl;
     res = Dialog(MSGS1);
@@ -404,7 +423,13 @@ void MainStartUI(){
 }
 
 int main() {
-    MainStartUI();
+//    while (true)
+//        MainStartUI();
+    Set<int> a;
+    a.Add(4);
+    a.Add(2);
+    a.Add(5);
+    cout << a.AsTree() << endl;
     return 0;
 }
 
@@ -488,3 +513,4 @@ EMSCRIPTEN_BINDINGS(Laba3) {
         emscripten::function("start", &MainStartUI, emscripten::allow_raw_pointers());
 }
 #endif
+//#pragma clang diagnostic pop

@@ -22,6 +22,8 @@ self.onmessage = async (e) => {
             },
         });
         self.instance.start();
+        // while (!await self.instance.start())
+        //     cin("Restarting program...\n\n\n");
     } else {
         cin(e.data);
     }

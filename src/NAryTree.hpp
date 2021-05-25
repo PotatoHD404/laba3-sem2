@@ -275,6 +275,10 @@ public:
 
     size_t Count() { return count; }
 
+    string Order(){
+        return Order("{K}(2)[1]<3>d4b\\5/");
+    }
+
     string Order(const string &str) {
         regex word_regex(R"(([^\dK])((\d)+|(K))([^\dK]))");
         auto words_begin = sregex_iterator(str.begin(), str.end(), word_regex);
