@@ -214,7 +214,8 @@ const Page = () => {
                         </div>
                     </div>
                     <div className="col-lg-4 col-md-6 d-none" id="menu">
-                        <div className="input-group mb-3">
+                        <div className="row">
+                        <div className="input-group mb-3 col">
                             <div className="input-group-prepend">
 
                                 <select className="form-select" aria-label="" id="InputSelect">
@@ -366,6 +367,7 @@ const Page = () => {
                             </div>
                             <input type="text" className="form-control" placeholder="" id="result" aria-label="Result"
                                    readOnly/>
+                        </div>
                         </div>
                     </div>
                 </div>

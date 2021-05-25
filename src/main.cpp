@@ -445,44 +445,34 @@ void MainStartUI() {
     }
 }
 
-int main() {
-//    while (true)
-    MainStartUI();
-//    Set<int> a;
-//    a.Add(1);
-//    a.Remove(1);
-//    a.Add(2);
-//    a.Remove(2);
-////    a.Add(2);
-////    a.Add(5);
-//    cout << a << endl;
-    return 0;
-}
-
-
-
-
-
-//int x2(int x) {
-//    if (x % 2 == 0) return 2 * x;
-//    return x;
-//}
-//
 //int main() {
-////    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
-////    string order = tree.Order("{K}(1)[2]");
-////    cout << order << endl;
-////    NAryTree<int> res(order, "{K}(1)[2]");
-////    Set<int> set = Set<int>();
-////    int iterations = 1000;
-////#ifdef __EMSCRIPTEN__
-////    readline();
-////    stringstream ss(readline());
-////    ss >> iterations;
-////#endif
-////    std::random_device rd;
-////    std::mt19937 mt(rd());
-////    uniform_int_distribution<int> intDistro(0, iterations * 10);
+////    while (true)
+//    MainStartUI();
+////    Set<int> a;
+////    a.Add(1);
+////    a.Remove(1);
+////    a.Add(2);
+////    a.Remove(2);
+//////    a.Add(2);
+//////    a.Add(5);
+////    cout << a << endl;
+//    return 0;
+//}
+
+
+
+
+//(2)[1]<3>{K}
+int main() {
+    NAryTree<int> tree = NAryTree<int>("{1 7}({2})[{3}({4})[{5}]]", "{K}(1)[2]");
+//    string order = tree.Order("{K}(1)[2]");
+//    cout << order << endl;
+//    NAryTree<int> res(order, "{K}(1)[2]");
+//    Set<int> set = Set<int>();
+//    int iterations = 1000;
+//    std::random_device rd;
+//    std::mt19937 mt(rd());
+//    uniform_int_distribution<int> intDistro(0, iterations * 10);
 //    Set<int> set1, set2;
 //    for (int i = 0; i < 20; ++i) {
 //        set1.Add(i);
@@ -492,47 +482,47 @@ int main() {
 //    }
 //    cout << set1 << " " << set2 << endl;
 //    cout << (set1 + set2).Map(x2) << endl;
-////    bTree.Insert(5);
-//////    bTree.Pop();
-////    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl << bTree.Count() << endl;
-////    for (int i = 0; i < iterations; ++i) {
-////        int tmp = intDistro(mt);
-////        auto start = high_resolution_clock::now();
-////        bTree.Insert(tmp);
-////        auto stop = high_resolution_clock::now();
-////        if (i % 10000 == 0) {
-////            cout << "time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000
-////                 << " microseconds";
-////            start = high_resolution_clock::now();
-////            bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')");
-////            stop = high_resolution_clock::now();
-////            cout << " order time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000000
-////                 << " milliseconds"
-////                 << " iteration #" << i << endl;
-////        }
-////    }
-////    bTree.Remove(8);
-////    bTree.Remove(17);
-////    cout << bTree.Order("{K}(2)[1]<3>d4b\\5/") << endl;
-////    cout << bTree.AscendingOrder() << endl;
-////    cout << bTree.ToArraySequence() << endl;
-////    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
-////    for (int i = 0; i < 19; ++i) {
-////        if(i == 9)
-////            int a = 0;
-////        cout << bTree.Contains(i) << endl;
-////    }
-////        bTree.Insert(0);
-////        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
-////    bTree.Remove(8);
-////    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
-////    int *a = new int(5);
-////    int *b = new int(6);
-////    cout << HasMore<int>::value << endl;
-////    delete a;
-////    delete b;
-//    return 0;
-//}
+//    bTree.Insert(5);
+////    bTree.Pop();
+//    cout << bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')") << endl << bTree.Count() << endl;
+//    for (int i = 0; i < iterations; ++i) {
+//        int tmp = intDistro(mt);
+//        auto start = high_resolution_clock::now();
+//        bTree.Insert(tmp);
+//        auto stop = high_resolution_clock::now();
+//        if (i % 10000 == 0) {
+//            cout << "time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000
+//                 << " microseconds";
+//            start = high_resolution_clock::now();
+//            bTree.Order(R"({K}(1)[2]<3>d4b/5\"6')");
+//            stop = high_resolution_clock::now();
+//            cout << " order time taken : " << (float) duration_cast<nanoseconds>(stop - start).count() / 1000000
+//                 << " milliseconds"
+//                 << " iteration #" << i << endl;
+//        }
+//    }
+//    bTree.Remove(8);
+//    bTree.Remove(17);
+//    cout << bTree.Order("{K}(2)[1]<3>d4b\\5/") << endl;
+//    cout << bTree.AscendingOrder() << endl;
+//    cout << bTree.ToArraySequence() << endl;
+//    cout << "time taken : " << (float) clock() / CLOCKS_PER_SEC << " secs" << endl;
+//    for (int i = 0; i < 19; ++i) {
+//        if(i == 9)
+//            int a = 0;
+//        cout << bTree.Contains(i) << endl;
+//    }
+//        bTree.Insert(0);
+//        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+//    bTree.Remove(8);
+//    cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;
+//    int *a = new int(5);
+//    int *b = new int(6);
+//    cout << HasMore<int>::value << endl;
+//    delete a;
+//    delete b;
+    return 0;
+}
 
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(Laba3) {
