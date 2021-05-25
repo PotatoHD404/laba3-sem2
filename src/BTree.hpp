@@ -408,7 +408,7 @@ public:
         }
     }
 
-    bool Search(T key) {
+    bool Contains(T key) {
         return static_cast<BNode *>(this->root)->Search(key) != nullptr;
     }
 

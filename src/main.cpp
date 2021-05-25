@@ -98,10 +98,14 @@ using namespace std;
 
 
 const char *MSGS[] = {"0. Quit",
-                      "1. Add value",
-                      "2. Remove value",
-                      "3. Print",
-                      "4. Convert to ArraySequence and print"};
+                      "1. Add value to set",
+                      "2. Remove value to set",
+                      "3. Print set",
+                      "4. Convert set to ArraySequence and print",
+                      "5. Check if set contains value",
+                      "6. Calculate union of sets",
+                      "7. Calculate intersection of sets",
+                      "8. Calculate difference of sets"};
 
 const char *MSGS1[] = {"0. Quit",
                        "1. Int",
@@ -118,11 +122,16 @@ const char *MSGS2[] = {"0. Quit",
                        "3. subtract2"};
 
 const char *MSGS3[] = {"0. Quit",
-                      "1. Add value",
-                      "2. Remove value",
-                      "3. Print",
-                      "4. Convert to ArraySequence and print",
-                      "5. Apply func"};
+                       "1. Add value",
+                       "2. Remove value",
+                       "3. Print",
+                       "4. Convert to ArraySequence and print",
+                       "5. Contains element in set",
+                       "6. Apply func"};
+
+const char *MSGS4[] = {"0. Quit",
+                       "1. First set",
+                       "2. Second set"};
 
 template<int N>
 int Dialog(const char *(&msgs)[N]) {
@@ -142,37 +151,114 @@ int Dialog(const char *(&msgs)[N]) {
 }
 
 template<typename T>
+T InputValue() {
+
+    bool success = false;
+    T value;
+    while (!success) {
+        cout << "Input value:\n";
+        stringstream ss(readline());
+        try {
+            ss >> value;
+            success = true;
+        }
+        catch (exception &e) {
+            cout << "An error has occurred: " << e.what() << "\nTry again!\n";
+        }
+    }
+    return value;
+}
+
+template<typename T>
 void StartUI() {
     int res = 1;
     string tmp;
-    Set<T> set = Set<T>();
+    Set<T> set1, set2;
+    Set<T> *set = nullptr;
     while (res != 0) {
-        res = Dialog(MSGS);
-        switch (res) {
-            case 0:
-                break;
-            case 1: {
-                T value;
-                cin >> value;
-                set.Add(value);
+        try {
+            res = Dialog(MSGS);
+            T value;
+            switch (res) {
+                case 0:
+                    break;
+                case 1: {
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    value = InputValue<T>();
+                    set->Add(value);
+                    break;
+                }
+
+                case 2: {
+                    value = InputValue<T>();
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    set->Remove(value);
+                    break;
+                }
+
+                case 3:
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    cout << *set << endl;
+                    break;
+                case 4:
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    cout << set->ToArraySequence() << endl;
+                    break;
+                case 5:
+                    value = InputValue<T>();
+                    res = Dialog(MSGS4);
+                    if (res == 1)
+                        set = &set1;
+                    else if (res == 2)
+                        set = &set2;
+                    else
+                        break;
+                    if (set->Contains(value))
+                        cout << "Set contains the value\n";
+                    else
+                        cout << "Set does not contain the value\n";
+                    break;
+                case 6:
+                    cout << set1 + set2 << endl;
+                    break;
+                case 7:
+                    cout << set1 * set2 << endl;
+                    break;
+                case 8:
+                    cout << set1 - set2 << endl;
+                    break;
+                default: {
+                    cout << "How did you end up here?\n";
+                    break;
+                }
             }
-                break;
-            case 2: {
-                T value1;
-                cin >> value1;
-                set.Remove(value1);
-            }
-                break;
-            case 3:
-                cout << set << endl;
-                break;
-            case 4:
-                cout << set.ToArraySequence() << endl;
-                break;
-            default: {
-                cout << "How did you end up here?\n";
-                break;
-            }
+        }
+        catch (exception &e) {
+            cout << "An error has occurred: " << e.what() << "\nTry again!\n";
         }
     }
 }
@@ -180,16 +266,16 @@ void StartUI() {
 void StartUI_func() {
     int res = 1;
     string tmp;
-    Set<int (*)(int)> set = Set<int (*)(int)>();
+    Set<int (*)(int)> set;
     while (res != 0) {
-        res = Dialog(MSGS);
+        res = Dialog(MSGS3);
+        int (*func)(int) = nullptr;
         switch (res) {
             case 0:
                 break;
             case 1: {
                 res = Dialog(MSGS2);
-                int(*func)(int);
-                switch(res){
+                switch (res) {
                     case 0:
                         break;
                     case 1:
@@ -201,14 +287,18 @@ void StartUI_func() {
                     case 3:
                         func = subtract2;
                         break;
+                    default: {
+                        cout << "How did you end up here?\n";
+                        break;
+                    }
                 }
                 set.Add(func);
-            }
                 break;
+            }
+
             case 2: {
                 res = Dialog(MSGS2);
-                int(*func)(int);
-                switch(res){
+                switch (res) {
                     case 0:
                         break;
                     case 1:
@@ -220,17 +310,57 @@ void StartUI_func() {
                     case 3:
                         func = subtract2;
                         break;
+                    default: {
+                        cout << "How did you end up here?\n";
+                        break;
+                    }
                 }
-//                set.Add(func);
                 set.Remove(func);
-            }
                 break;
+            }
+
             case 3:
                 cout << set << endl;
                 break;
-            case 4:
+            case 4: {
                 cout << set.ToArraySequence() << endl;
                 break;
+            }
+            case 5: {
+                res = Dialog(MSGS2);
+
+                switch (res) {
+                    case 0:
+                        break;
+                    case 1:
+                        func = Square;
+                        break;
+                    case 2:
+                        func = x2;
+                        break;
+                    case 3:
+                        func = subtract2;
+                        break;
+                    default: {
+                        cout << "How did you end up here?\n";
+                        break;
+                    }
+                }
+                if (set.Contains(func))
+                    cout << "Set contains the value\n";
+                else
+                    cout << "Set does not contain the value\n";
+                break;
+            }
+            case 6: {
+                ArraySequence<int (*)(int)> seq = set.ToArraySequence();
+                cout << "Applying all functions to number 5\n";
+                for (size_t i = 0; i < seq.Count(); ++i) {
+                    cout << seq[i](5) << endl;
+                }
+                break;
+            }
+
             default: {
                 cout << "How did you end up here?\n";
                 break;
@@ -336,7 +466,7 @@ int main() {
 ////    for (int i = 0; i < 19; ++i) {
 ////        if(i == 9)
 ////            int a = 0;
-////        cout << bTree.Search(i) << endl;
+////        cout << bTree.Contains(i) << endl;
 ////    }
 ////        bTree.Insert(0);
 ////        cout << bTree.Order("{K}(1)[2]<3>d4b\\5/") << endl;

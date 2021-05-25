@@ -80,6 +80,10 @@ public:
         items.Insert(item);
     }
 
+    bool Contains(T item) {
+        return items.Contains(item);
+    }
+
     void Remove(T item) {
         return items.Remove(item);
     }

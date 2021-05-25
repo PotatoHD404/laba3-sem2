@@ -96,12 +96,12 @@ public:
     }
 
     friend istream &operator>>(istream &in, Complex &complex) {
-        in >> complex.real;
-        in >> complex.imaginary;
-        return in;
+        if (!(in >> complex.real) || !(in >> complex.imaginary))
+            throw runtime_error("Wrong input");
+        else return in;
     }
 
-    Complex& operator=(const Complex&) = default;
+    Complex &operator=(const Complex &) = default;
 
     bool operator==(const Complex &x) const { return !(*this != x); }
 
